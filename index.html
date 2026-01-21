@@ -502,7 +502,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const CLOUD_DOC = doc(db, "replyLibrary", "default");
+const CLOUD_DOC = (uid) => doc(db, "replyLibrary", uid);
 
 const SYNC_LOCAL_KEYS = {
   items: "reply_items_v2",
@@ -551,7 +551,7 @@ async function saveToCloudNow() {
     payload[k] = JSON.parse(localStorage.getItem(SYNC_LOCAL_KEYS[k]) || "null");
   }
 
-  await setDoc(CLOUD_DOC, payload, { merge: true });
+  await setDoc(CLOUD_DOC(currentUser.uid), payload, { merge: true });
   syncReady = true;
   console.log("✅ saved to cloud");
 }
@@ -572,7 +572,8 @@ async function saveToCloudImmediate() {
 }
 
 async function loadFromCloud() {
-  const snap = await getDoc(CLOUD_DOC);
+  if (!currentUser) return;
+  const snap = await getDoc(CLOUD_DOC(currentUser.uid));
 
   if (!snap.exists()) {
     await saveToCloudNow();
@@ -1239,7 +1240,7 @@ function editItem(it){
   toast("已更新素材");
   syncNow();
 }
-function deleteItem(it){
+async function deleteItem(it){
   if(!confirm(`確定刪除這則素材？\n\n${it.title}`)) return;
   items = items.filter(x => x.id !== it.id);
   delete used[it.id];
@@ -1254,7 +1255,7 @@ function deleteItem(it){
   toast("已刪除素材");
   
   // ⚠️ 修正：刪除時立即上傳，避免重整還原
-  saveToCloudImmediate();
+  await saveToCloudImmediate();
 }
 
 /** ========== view & render ========== */
