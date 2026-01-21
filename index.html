@@ -493,6 +493,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ⚠️ 目前是固定一份雲端資料（兩個帳號共用同一份）
 const CLOUD_DOC = doc(db, "replyLibrary", "default");
 
 // 你本機的四個 key（與下方 LS_* 一致）
@@ -576,14 +577,15 @@ async function loadFromCloud() {
   console.log("✅ loaded from cloud");
 }
 
-mountAuthButtons();
-
-onAuthStateChanged(auth, async (user) => {
-  const ALLOW_EMAILS = [
+/** ✅ 只允許這兩個 Gmail */
+const ALLOW_EMAILS = [
   "tsai860218@gmail.com",
   "xc23026849@gmail.com"
 ];
 
+mountAuthButtons();
+
+/** ✅ 監聽登入狀態 + 白名單管控 */
 onAuthStateChanged(auth, async (user) => {
   currentUser = user || null;
 
@@ -592,22 +594,25 @@ onAuthStateChanged(auth, async (user) => {
   if (loginBtn) loginBtn.style.display = user ? "none" : "inline-block";
   if (logoutBtn) logoutBtn.style.display = user ? "inline-block" : "none";
 
-  if (user) {
-    const email = (user.email || "").toLowerCase();
-
-    // ✅ 不在白名單 → 直接踢掉
-    if (!ALLOW_EMAILS.includes(email)) {
-      alert("此帳號未授權使用此系統");
-      await signOut(auth);
-      return;
-    }
-
-    console.log("✅ Logged in UID:", user.uid, "EMAIL:", user.email);
-    await loadFromCloud();
-    location.reload();
+  if (!user) {
+    syncReady = false;
+    return;
   }
-});
 
+  const email = (user.email || "").toLowerCase();
+
+  // ✅ 不在白名單 → 踢掉
+  if (!ALLOW_EMAILS.includes(email)) {
+    alert("此帳號未授權使用此系統");
+    await signOut(auth);
+    syncReady = false;
+    return;
+  }
+
+  console.log("✅ Authorized login:", email, "UID:", user.uid);
+  await loadFromCloud();
+  // 不用 reload（避免初始化+同步抖動）
+});
 
 // 給下面原本程式直接用
 window.scheduleSaveToCloud = scheduleSaveToCloud;
