@@ -579,6 +579,12 @@ async function loadFromCloud() {
 mountAuthButtons();
 
 onAuthStateChanged(auth, async (user) => {
+  const ALLOW_EMAILS = [
+  "tsai860218@gmail.com",
+  "xc23026849@gmail.com"
+];
+
+onAuthStateChanged(auth, async (user) => {
   currentUser = user || null;
 
   const loginBtn = document.getElementById("loginBtn");
@@ -587,12 +593,21 @@ onAuthStateChanged(auth, async (user) => {
   if (logoutBtn) logoutBtn.style.display = user ? "inline-block" : "none";
 
   if (user) {
-    console.log("✅ Logged in UID:", user.uid);
+    const email = (user.email || "").toLowerCase();
+
+    // ✅ 不在白名單 → 直接踢掉
+    if (!ALLOW_EMAILS.includes(email)) {
+      alert("此帳號未授權使用此系統");
+      await signOut(auth);
+      return;
+    }
+
+    console.log("✅ Logged in UID:", user.uid, "EMAIL:", user.email);
     await loadFromCloud();
-    // 讓你的系統以雲端資料為主
     location.reload();
   }
 });
+
 
 // 給下面原本程式直接用
 window.scheduleSaveToCloud = scheduleSaveToCloud;
