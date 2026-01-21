@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>回覆素材庫 Pro（單一回覆版）</title>
+  <title>回覆素材庫 Pro（含來源紀錄）</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -196,7 +196,6 @@
       box-shadow:0 6px 14px rgba(16,24,40,.08);
     }
 
-    /* 額外：預覽切換（卡片/條列） */
     .viewSeg{ margin-left:auto; }
     .divider{height:1px;background:rgba(234,236,240,.9);margin:10px 0}
     .warn{background:#fff7ed;border:1px solid #fed7aa}
@@ -273,7 +272,6 @@
       border-radius: 6px;
     }
 
-    /* ✅ TOP3：條列收合（2行） */
     .clamp2{
       display:-webkit-box;
       -webkit-box-orient:vertical;
@@ -281,7 +279,6 @@
       overflow:hidden;
     }
 
-    /* ✅ TOP3：條列右側固定操作（grid） */
     .resultRowTop{
       display:grid !important;
       grid-template-columns: 1fr auto;
@@ -295,6 +292,28 @@
       justify-content:flex-end;
       align-content:flex-start;
     }
+
+    /* ✅ 來源備註區塊 */
+    .sourceBox{
+      margin-top:12px;
+      padding:10px 12px;
+      border:1px dashed var(--gray-300);
+      border-radius:12px;
+      background: #fdfcfc;
+    }
+    .sourceImg{
+      max-width:100%;
+      height:auto;
+      max-height:200px;
+      border-radius:8px;
+      margin-top:8px;
+      cursor:pointer;
+      border:1px solid rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .sourceImg:hover{
+      transform: scale(1.02);
+    }
   </style>
 </head>
 
@@ -307,7 +326,6 @@
       </div>
       <div class="row" style="align-items:center">
         <div class="pill" id="countPill">0 則</div>
-        <button class="btn3" id="installHint">📲 加到桌面</button>
       </div>
     </div>
 
@@ -417,6 +435,18 @@
           </div>
 
           <div class="divider"></div>
+          <div class="small muted" style="margin-bottom:6px">來源備註（選填）</div>
+          <div class="row">
+             <input id="newSourceText" class="search" placeholder="例如：陳大姐問的 / 0120 Line 群組截圖">
+          </div>
+          <div class="row" style="margin-top:8px;align-items:center">
+             <label class="btn3 btnSmall" style="cursor:pointer;display:flex;align-items:center;gap:6px">
+                📷 上傳圖片
+                <input type="file" id="newSourceImage" accept="image/*" style="display:none">
+             </label>
+             <span id="imgPreviewText" class="small muted">尚未選擇圖片</span>
+          </div>
+          <div class="divider"></div>
 
           <div class="small muted">回覆內容</div>
           <textarea id="newReply" placeholder="請輸入回覆內容..."></textarea>
@@ -472,10 +502,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ⚠️ 目前是固定一份雲端資料（兩個帳號共用同一份）
 const CLOUD_DOC = doc(db, "replyLibrary", "default");
 
-// 你本機的四個 key（與下方 LS_* 一致）
 const SYNC_LOCAL_KEYS = {
   items: "reply_items_v2",
   zones: "reply_zones_v2",
@@ -507,7 +535,6 @@ function mountAuthButtons() {
   logoutBtn.style.display = "none";
   logoutBtn.onclick = async () => signOut(auth);
 
-  // 放在「加到桌面」按鈕左邊
   bar.prepend(logoutBtn);
   bar.prepend(loginBtn);
 }
@@ -541,7 +568,6 @@ async function loadFromCloud() {
   const snap = await getDoc(CLOUD_DOC);
 
   if (!snap.exists()) {
-    // 雲端第一次沒有資料：把你本機現有資料當初始上傳
     await saveToCloudNow();
     return;
   }
@@ -556,7 +582,6 @@ async function loadFromCloud() {
   console.log("✅ loaded from cloud");
 }
 
-/** ✅ 只允許這兩個 Gmail */
 const ALLOW_EMAILS = [
   "tsai860218@gmail.com",
   "xc23026849@gmail.com"
@@ -564,7 +589,6 @@ const ALLOW_EMAILS = [
 
 mountAuthButtons();
 
-/** ✅ 監聽登入狀態 + 白名單管控 */
 onAuthStateChanged(auth, async (user) => {
   currentUser = user || null;
 
@@ -580,7 +604,6 @@ onAuthStateChanged(auth, async (user) => {
 
   const email = (user.email || "").toLowerCase();
 
-  // ✅ 不在白名單 → 踢掉
   if (!ALLOW_EMAILS.includes(email)) {
     alert("此帳號未授權使用此系統");
     await signOut(auth);
@@ -590,24 +613,21 @@ onAuthStateChanged(auth, async (user) => {
 
   console.log("✅ Authorized login:", email, "UID:", user.uid);
   
-  // 1. 等待雲端資料下載並存入 LocalStorage
   await loadFromCloud();
 
-  // 2. 👇 關鍵修正：資料下載後，必須重新初始化變數與畫面
-  ensureDefaults();       // 從 LS 重新讀取資料到記憶體變數
-  refreshAllSelectors();  // 更新下拉選單
-  renderZoneManager();    // 更新管理介面
+  ensureDefaults();
+  refreshAllSelectors();
+  renderZoneManager();
   renderCatManager();
   renderSynEditor();
-  render();               // 重新渲染列表
+  render();
   
   toast("☁️ 雲端資料已同步");
 });
 
-// 給下面原本程式直接用
 window.scheduleSaveToCloud = scheduleSaveToCloud;
 
-/** ========== PWA：動態 manifest（單檔即可） ========== */
+/** ========== PWA Manifest ========== */
 (function injectManifest(){
   const manifest = {
     name: "回覆素材庫 Pro",
@@ -639,7 +659,7 @@ const LS_FAV   = "reply_fav_v2";
 const LS_SYN   = "reply_syn_v2";
 const LS_ZONES = "reply_zones_v2";
 const LS_CATS  = "reply_cats_v2";
-const LS_VIEW  = "reply_view_v2"; // ✅ view mode
+const LS_VIEW  = "reply_view_v2";
 
 function syncNow(){ window.scheduleSaveToCloud && window.scheduleSaveToCloud(); }
 
@@ -671,14 +691,6 @@ const seedItems = [
     category: "時間確認",
     keywords: ["派工","預約","技師","施工","安裝","不要週二"],
     reply: "阿姨早安～跟妳確認一下派工備註：\n1) 分流改鵝頸（需要加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 時間：盡量不要排週二\n這樣寫有沒有漏掉什麼呢？"
-  },
-  {
-    id: "p_team_1",
-    zone: "團隊溝通",
-    title: "行程討論提醒（不指責、把規則講清楚）",
-    category: "規範/提醒",
-    keywords: ["提醒","規則","行程","討論","注意","禮貌"],
-    reply: "大家提醒一下～🙏 之後如果需要在別人的車上吃東西，先問一下車主比較禮貌也避免誤會。\n我們都希望行程開心順順的～謝謝大家配合❤️"
   }
 ];
 
@@ -714,12 +726,43 @@ async function copyText(text) {
 }
 function idgen(){ return "u_" + Math.random().toString(16).slice(2); }
 
+/* ✅ 圖片壓縮轉 Base64 避免資料庫爆掉 */
+function fileToCompressedBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        // 設定最大寬度
+        const maxWidth = 800;
+        let w = img.width;
+        let h = img.height;
+        if (w > maxWidth) {
+          h = Math.round(h * (maxWidth / w));
+          w = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        // 壓縮品質 0.7
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = error => reject(error);
+    };
+    reader.onerror = error => reject(error);
+  });
+}
+
 /* ✅ TOP3：命中詞 / 高亮 */
 function getHits(item, qParts){
   if(!qParts?.length) return [];
   const text = normalize([
     item.zone, item.title, item.category, (item.keywords||[]).join(","),
-    item.reply
+    item.reply, item.sourceText || ""
   ].join(" "));
   const hits = [];
   for(const p of qParts){
@@ -769,10 +812,9 @@ function ensureDefaults(){
     if(!it.category) it.category = DEFAULT_CAT;
     if(!it.keywords) it.keywords = [];
     
-    // ✅ 資料遷移：如果有舊的 replies 物件，轉成單一 reply (優先取 soft)
     if(it.replies && !it.reply){
         it.reply = it.replies.soft || it.replies.neutral || it.replies.firm || "";
-        delete it.replies; // 清理舊資料
+        delete it.replies;
     }
     if(!it.reply) it.reply = "";
 
@@ -821,7 +863,6 @@ function ensureDefaults(){
   saveJSON(LS_CATS, cats);
   saveJSON(LS_SYN, syn);
 
-  // ✅ 初始也同步一次（登入後才會真的寫入）
   syncNow();
 }
 
@@ -844,7 +885,7 @@ function scoreItem(item, qParts){
   if(!qParts.length) return 0;
   const text = normalize([
     item.zone, item.title, item.category, (item.keywords||[]).join(","),
-    item.reply
+    item.reply, item.sourceText || ""
   ].join(" "));
   const kwText = normalize((item.keywords||[]).join(" "));
   let score = 0;
@@ -1156,7 +1197,10 @@ function editItem(it){
   const kw = prompt("關鍵字（逗號分隔）", (it.keywords||[]).join(","));
   if(kw === null) return;
 
-  // ✅ 只問一次回覆內容
+  // ✅ 編輯時也可以改來源備註
+  const sourceText = prompt("來源備註（選填）", it.sourceText || "");
+  if(sourceText === null) return;
+
   const reply = prompt("回覆內容", it.reply || "");
   if(reply === null) return;
 
@@ -1164,7 +1208,10 @@ function editItem(it){
   it.category = (category.trim() || DEFAULT_CAT);
   it.title = (title.trim() || it.title);
   it.keywords = (kw||"").split(",").map(s=>s.trim()).filter(Boolean);
-  it.reply = reply; // ✅
+  it.sourceText = sourceText.trim();
+  it.reply = reply;
+
+  // ⚠️ 編輯不支援改圖片（為了 UI 簡單）
 
   saveJSON(LS_ITEMS, items);
   ensureZoneCatExist(it.zone, it.category);
@@ -1296,12 +1343,18 @@ function renderCardView(filtered){
       .map(k => `<span class="tag">${escapeHtml(k)}</span>`).join("");
 
     const usedTime = used[it.id] ? new Date(used[it.id]).toLocaleString() : "—";
-    
-    // ✅ 直接取用單一 reply
     const replyText = it.reply || "";
 
     const titleHtml = highlightEscaped(escapeHtml(it.title), hits);
     const replyHtml = highlightEscaped(escapeHtml(replyText), hits);
+
+    /* ✅ 來源顯示 */
+    const sourceHtml = (it.sourceText || it.sourceImage) ? `
+       <div class="sourceBox">
+          ${it.sourceText ? `<div>📝 備註：${highlightEscaped(escapeHtml(it.sourceText), hits)}</div>` : ''}
+          ${it.sourceImage ? `<img src="${it.sourceImage}" class="sourceImg" onclick="window.open(this.src)" title="點擊放大">` : ''}
+       </div>
+    ` : '';
 
     return `
       <div class="card">
@@ -1312,6 +1365,8 @@ function renderCardView(filtered){
         <div class="small muted" style="margin-top:6px">
           ${hits.length ? `命中：${hits.map(h=>escapeHtml(h)).join("、")}` : ""}
         </div>
+        
+        ${sourceHtml}
 
         <div class="reply">${replyHtml}</div>
 
@@ -1354,6 +1409,14 @@ function renderListView(filtered){
 
     const isOpen = expandedIds.has(it.id);
 
+    /* ✅ 來源顯示 */
+    const sourceHtml = (it.sourceText || it.sourceImage) ? `
+       <div class="sourceBox">
+          ${it.sourceText ? `<div>📝 備註：${highlightEscaped(escapeHtml(it.sourceText), hits)}</div>` : ''}
+          ${it.sourceImage ? `<img src="${it.sourceImage}" class="sourceImg" onclick="window.open(this.src)" title="點擊放大">` : ''}
+       </div>
+    ` : '';
+
     return `
       <div class="resultRow">
         <div class="resultRowTop">
@@ -1378,6 +1441,7 @@ function renderListView(filtered){
           </div>
         </div>
 
+        ${isOpen ? sourceHtml : ''}
         <div class="resultRowReply ${isOpen ? "" : "clamp2"}">${replyHtml}</div>
       </div>
     `;
@@ -1447,19 +1511,45 @@ document.getElementById("newCatApply").addEventListener("click", () => {
   elNewCatCustom.value = "";
 });
 
+/* ✅ 圖片預覽 */
+document.getElementById("newSourceImage").addEventListener("change", (e)=>{
+   const file = e.target.files?.[0];
+   const label = document.getElementById("imgPreviewText");
+   if(file) label.textContent = `已選擇：${file.name}`;
+   else label.textContent = "尚未選擇圖片";
+});
+
 /** Add item */
-document.getElementById("add").addEventListener("click", () => {
+document.getElementById("add").addEventListener("click", async () => {
   const zone = elNewZone.value || DEFAULT_ZONE;
   const category = elNewCat.value || DEFAULT_CAT;
   const title = document.getElementById("newTitle").value.trim();
   const kw = document.getElementById("newKw").value.split(",").map(s=>s.trim()).filter(Boolean);
   const reply = document.getElementById("newReply").value.trim();
+  
+  // 來源欄位
+  const sourceText = document.getElementById("newSourceText").value.trim();
+  const sourceFile = document.getElementById("newSourceImage").files?.[0];
 
   if(!title || !reply) return toast("標題與回覆內容必填");
 
+  // 若有圖片先轉 Base64
+  let sourceImage = null;
+  if(sourceFile){
+      try{
+          toast("正在處理圖片...");
+          sourceImage = await fileToCompressedBase64(sourceFile);
+      } catch(e){
+          return alert("圖片處理失敗，請換一張試試");
+      }
+  }
+
   const id = idgen();
-  // ✅ 結構簡化：只存 reply
-  items.push({id, zone, category, title, keywords: kw, reply: reply});
+  items.push({
+      id, zone, category, title, 
+      keywords: kw, reply, 
+      sourceText, sourceImage 
+  });
   saveJSON(LS_ITEMS, items);
 
   if(!zones.includes(zone)){ zones.push(zone); }
@@ -1469,7 +1559,10 @@ document.getElementById("add").addEventListener("click", () => {
 
   syncNow();
 
-  ["newTitle","newKw","newReply"].forEach(i => document.getElementById(i).value = "");
+  ["newTitle","newKw","newReply","newSourceText"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("newSourceImage").value = "";
+  document.getElementById("imgPreviewText").textContent = "尚未選擇圖片";
+
   refreshAllSelectors(true);
   renderZoneManager();
   renderCatManager();
@@ -1490,7 +1583,7 @@ function download(filename, text) {
 }
 document.getElementById("exportBtn").addEventListener("click", () => {
   const payload = {
-    version: 3, // Version bump
+    version: 3, 
     exportedAt: new Date().toISOString(),
     items, used, fav, syn, zones, cats,
     viewMode
@@ -1517,7 +1610,6 @@ document.getElementById("filePick").addEventListener("change", async (e) => {
     cats  = Array.isArray(obj.cats)  ? obj.cats  : [{zone:DEFAULT_ZONE,name:DEFAULT_CAT}];
     viewMode = (obj.viewMode === "list" || obj.viewMode === "card") ? obj.viewMode : (localStorage.getItem(LS_VIEW) || "card");
 
-    // ✅ Import 時也做一次結構檢查與遷移
     items = items.map(it => {
       if(!it.zone) it.zone = DEFAULT_ZONE;
       if(!it.category) it.category = DEFAULT_CAT;
@@ -1582,13 +1674,6 @@ document.getElementById("synReset").addEventListener("click", () => {
   renderSynEditor();
   toast("已重置");
   render();
-});
-
-/** PWA install hint */
-document.getElementById("installHint").addEventListener("click", () => {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  if (isIOS) alert("iPhone/iPad：請用 Safari 開啟本頁 → 點「分享」→ 選「加入主畫面」。");
-  else alert("Android/Chrome：網址列右側通常會有「安裝應用程式」或「加入主畫面」。\n（若沒有，請用 https 或 localhost 開啟）");
 });
 
 /** ========== start ========== */
