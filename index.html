@@ -485,7 +485,7 @@
    同步：items / zones / cats / syn
    ========================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -500,6 +500,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+try { await getRedirectResult(auth); } catch(e) { /* ignore */ }
 const db = getFirestore(app);
 
 const CLOUD_DOC = (uid) => doc(db, "replyLibrary", uid);
@@ -525,16 +526,38 @@ function mountAuthButtons() {
   loginBtn.textContent = "🔐 Google 登入";
   loginBtn.onclick = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      console.warn("Popup login failed, fallback to redirect:", err);
+      await signInWithRedirect(auth, provider);
+    }
   };
 
   const logoutBtn = document.createElement("button");
   logoutBtn.id = "logoutBtn";
   logoutBtn.className = "btn3";
   logoutBtn.textContent = "🚪 登出";
+
+  const syncBtn = document.createElement("button");
+  syncBtn.id = "syncBtn";
+  syncBtn.className = "btn3";
+  syncBtn.textContent = "☁️ 立即同步";
+  syncBtn.onclick = async () => {
+    await saveToCloudNow();
+    toast("☁️ 已手動同步");
+  };
+
+  const userBadge = document.createElement("span");
+  userBadge.id = "userBadge";
+  userBadge.className = "muted";
+  userBadge.style.marginLeft = "8px";
+  userBadge.style.fontSize = "12px";
   logoutBtn.style.display = "none";
   logoutBtn.onclick = async () => signOut(auth);
 
+  bar.prepend(userBadge);
+  bar.prepend(syncBtn);
   bar.prepend(logoutBtn);
   bar.prepend(loginBtn);
 }
@@ -604,6 +627,10 @@ onAuthStateChanged(auth, async (user) => {
   const logoutBtn = document.getElementById("logoutBtn");
   if (loginBtn) loginBtn.style.display = user ? "none" : "inline-block";
   if (logoutBtn) logoutBtn.style.display = user ? "inline-block" : "none";
+  const syncBtn = document.getElementById("syncBtn");
+  const userBadge = document.getElementById("userBadge");
+  if (syncBtn) syncBtn.style.display = user ? "inline-block" : "none";
+  if (userBadge) userBadge.textContent = user ? `已登入：${(user.email||"").toLowerCase()}` : "";
 
   if (!user) {
     syncReady = false;
@@ -634,6 +661,16 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 window.scheduleSaveToCloud = scheduleSaveToCloud;
+
+// 在手機切到背景/關閉頁面前，盡量把最後一次變更寫回雲端
+window.addEventListener("pagehide", () => {
+  try { saveToCloudNow(); } catch(e) {}
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    try { saveToCloudNow(); } catch(e) {}
+  }
+});
 
 /** ========== PWA Manifest ========== */
 (function injectManifest(){
