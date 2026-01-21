@@ -3,14 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>回覆素材庫 Pro（可自訂區域/子分類）</title>
+  <title>回覆素材庫 Pro（單一回覆版）</title>
 
-  <!-- Google Fonts：Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- PWA -->
   <meta name="theme-color" content="#4f46e5" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%234f46e5'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-size='92'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
 
@@ -175,7 +173,7 @@
 
     details summary{cursor:pointer}
 
-    /* 語氣切換器：iOS Segmented */
+    /* 切換器：iOS Segmented */
     .seg{
       display:inline-flex;
       padding:4px;
@@ -313,7 +311,6 @@
       </div>
     </div>
 
-    <!-- 搜尋區 -->
     <div class="card">
       <div class="row">
         <input id="q" class="search" placeholder="例：太貴 / 櫃檯壓力 / 派工 / 分期 / 不好意思…（可輸入多個詞）">
@@ -339,13 +336,6 @@
         <label class="small"><input type="checkbox" id="onlyFav"> 只看常用</label>
         <label class="small"><input type="checkbox" id="onlyRecent"> 只看最近用過</label>
 
-        <div class="seg" title="同一素材可切換三種語氣">
-          <button class="active" data-tone="soft">🧸溫柔</button>
-          <button data-tone="neutral">🙂中性</button>
-          <button data-tone="firm">👠強勢</button>
-        </div>
-
-        <!-- ✅ 預覽切換鍵 -->
         <div class="seg viewSeg" title="切換預覽樣式">
           <button class="active" data-view="card">🧩 卡片</button>
           <button data-view="list">📄 條列</button>
@@ -366,12 +356,10 @@
       </div>
     </div>
 
-    <!-- 分類管理 -->
     <div class="card">
       <details>
         <summary class="small">🧩 分類管理（區域/子分類：新增、刪除、編輯）</summary>
         <div style="margin-top:12px" class="grid2">
-          <!-- Zones -->
           <div class="card" style="box-shadow:none">
             <div class="title" style="font-size:16px">區域（大分類）</div>
             <div class="small muted">例如：團隊溝通 / 客戶溝通 / 店務/櫃檯 / 售後/派工</div>
@@ -384,7 +372,6 @@
             <div id="zoneList"></div>
           </div>
 
-          <!-- Categories -->
           <div class="card" style="box-shadow:none">
             <div class="title" style="font-size:16px">子分類（小分類）</div>
             <div class="small muted">子分類必須隸屬某個區域（例如：客戶溝通 → 價格/邀約/跟進）</div>
@@ -405,7 +392,6 @@
       </details>
     </div>
 
-    <!-- 新增素材 -->
     <div class="card">
       <details>
         <summary class="small">➕ 新增素材（區域/子分類可下拉，也可輸入後加入清單）</summary>
@@ -432,14 +418,8 @@
 
           <div class="divider"></div>
 
-          <div class="small muted">🧸溫柔版</div>
-          <textarea id="newReplySoft" placeholder="回覆內容（溫柔同理）"></textarea>
-
-          <div class="small muted" style="margin-top:10px">🙂中性版</div>
-          <textarea id="newReplyNeutral" placeholder="回覆內容（清楚中性，可留空=沿用溫柔版）"></textarea>
-
-          <div class="small muted" style="margin-top:10px">👠強勢版</div>
-          <textarea id="newReplyFirm" placeholder="回覆內容（立場明確，可留空=沿用溫柔版）"></textarea>
+          <div class="small muted">回覆內容</div>
+          <textarea id="newReply" placeholder="請輸入回覆內容..."></textarea>
 
           <div class="row" style="margin-top:10px;justify-content:flex-end">
             <button class="btn" id="add">新增</button>
@@ -450,7 +430,6 @@
       </details>
     </div>
 
-    <!-- 同義字 -->
     <div class="card warn">
       <details>
         <summary class="small">🧠 同義字字典（可直接改）</summary>
@@ -610,8 +589,19 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   console.log("✅ Authorized login:", email, "UID:", user.uid);
+  
+  // 1. 等待雲端資料下載並存入 LocalStorage
   await loadFromCloud();
-  // 不用 reload（避免初始化+同步抖動）
+
+  // 2. 👇 關鍵修正：資料下載後，必須重新初始化變數與畫面
+  ensureDefaults();       // 從 LS 重新讀取資料到記憶體變數
+  refreshAllSelectors();  // 更新下拉選單
+  renderZoneManager();    // 更新管理介面
+  renderCatManager();
+  renderSynEditor();
+  render();               // 重新渲染列表
+  
+  toast("☁️ 雲端資料已同步");
 });
 
 // 給下面原本程式直接用
@@ -646,7 +636,6 @@ window.scheduleSaveToCloud = scheduleSaveToCloud;
 const LS_ITEMS = "reply_items_v2";
 const LS_USED  = "reply_used_v2";
 const LS_FAV   = "reply_fav_v2";
-const LS_TONE  = "reply_tone_v2";
 const LS_SYN   = "reply_syn_v2";
 const LS_ZONES = "reply_zones_v2";
 const LS_CATS  = "reply_cats_v2";
@@ -665,11 +654,7 @@ const seedItems = [
     title: "價格太貴（同理→說明→給選擇）",
     category: "價格",
     keywords: ["太貴","價格","費用","預算","貴","分攤"],
-    replies: {
-      soft: "我懂～聽到費用第一反應真的會覺得有點高🥺\n\n我跟妳說明一下：這個是「材料＋施工」的標準收費，所以金額會是這樣。\n如果現場需要額外拉電或改管線，技師才會依實際狀況另外報價。\n\n妳如果希望，我們也可以一起想個妳比較舒服的做法（例如分段/分攤）。",
-      neutral: "跟妳說明一下：此項目費用為「材料＋施工」的標準收費。\n若現場需要額外拉電/改管線，技師會依實際狀況另外報價。\n如果你想，我也可以提供幾種處理方式讓你選擇（例如分段/分攤）。",
-      firm: "我理解你在意費用。\n但這項目是「材料＋施工」的標準收費，所以金額固定。\n若現場有額外施工需求，技師才會另外報價。\n你方便的話，我們就依標準流程安排；若要暫緩也沒問題。"
-    }
+    reply: "我懂～聽到費用第一反應真的會覺得有點高🥺\n\n我跟妳說明一下：這個是「材料＋施工」的標準收費，所以金額會是這樣。\n如果現場需要額外拉電或改管線，技師才會依實際狀況另外報價。\n\n妳如果希望，我們也可以一起想個妳比較舒服的做法（例如分段/分攤）。"
   },
   {
     id: "p_counter_1",
@@ -677,11 +662,7 @@ const seedItems = [
     title: "面對陌生客人壓力大（櫃檯一整天）",
     category: "安撫",
     keywords: ["壓力","緊張","陌生","櫃檯","害怕","想哭","客人"],
-    replies: {
-      soft: "我懂你現在那種壓力🥺 先不用逼自己一定要很會聊。\n你明天只要做到 3 件事就很穩：\n1) 微笑＋固定開場\n2) 聽清楚需求、重複一次確認\n3) 不確定就說「我幫您確認一下」\n\n固定開場：\n「您好～今天想了解/需要我幫您什麼呢？」",
-      neutral: "明天你可以用固定流程降低壓力：\n1) 先問需求：您好～今天需要我幫什麼？\n2) 需求複述確認：好的我再確認一下…\n3) 不確定就說：我幫您確認一下。\n照流程走就不會慌。",
-      firm: "你不需要討好所有人，你只需要把流程做好。\n固定開場、確認需求、需要就轉交/請同事協助。\n把你能控制的事做到位，就夠專業了。"
-    }
+    reply: "我懂你現在那種壓力🥺 先不用逼自己一定要很會聊。\n你明天只要做到 3 件事就很穩：\n1) 微笑＋固定開場\n2) 聽清楚需求、重複一次確認\n3) 不確定就說「我幫您確認一下」\n\n固定開場：\n「您好～今天想了解/需要我幫您什麼呢？」"
   },
   {
     id: "p_service_1",
@@ -689,11 +670,7 @@ const seedItems = [
     title: "派工時間確認（3-4 行）",
     category: "時間確認",
     keywords: ["派工","預約","技師","施工","安裝","不要週二"],
-    replies: {
-      soft: "阿姨早安～跟妳確認一下派工備註：\n1) 分流改鵝頸（需要加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 時間：盡量不要排週二\n這樣寫有沒有漏掉什麼呢？",
-      neutral: "跟您確認派工備註：\n1) 分流改鵝頸（加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 派工：避免週二\n請問是否正確？",
-      firm: "我這邊先依以下內容備註派工：分流改鵝頸、地點八里龍米路一段237號10樓、避免週二。\n若有其他限制請直接補充。"
-    }
+    reply: "阿姨早安～跟妳確認一下派工備註：\n1) 分流改鵝頸（需要加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 時間：盡量不要排週二\n這樣寫有沒有漏掉什麼呢？"
   },
   {
     id: "p_team_1",
@@ -701,11 +678,7 @@ const seedItems = [
     title: "行程討論提醒（不指責、把規則講清楚）",
     category: "規範/提醒",
     keywords: ["提醒","規則","行程","討論","注意","禮貌"],
-    replies: {
-      soft: "大家提醒一下～🙏 之後如果需要在別人的車上吃東西，先問一下車主比較禮貌也避免誤會。\n我們都希望行程開心順順的～謝謝大家配合❤️",
-      neutral: "提醒大家：若要在他人車上吃東西，請先徵詢車主同意，避免造成不舒服或誤會。謝謝配合。",
-      firm: "統一規範：車上飲食請先問過車主同意，未經同意請不要在車內食用。之後請照這個規則走。"
-    }
+    reply: "大家提醒一下～🙏 之後如果需要在別人的車上吃東西，先問一下車主比較禮貌也避免誤會。\n我們都希望行程開心順順的～謝謝大家配合❤️"
   }
 ];
 
@@ -746,7 +719,7 @@ function getHits(item, qParts){
   if(!qParts?.length) return [];
   const text = normalize([
     item.zone, item.title, item.category, (item.keywords||[]).join(","),
-    item.replies?.soft, item.replies?.neutral, item.replies?.firm
+    item.reply
   ].join(" "));
   const hits = [];
   for(const p of qParts){
@@ -778,7 +751,6 @@ function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
 let items = [];
 let used = {};
 let fav = {};
-let tone = "soft";
 let syn = {};
 let zones = [];
 let cats = [];
@@ -796,18 +768,20 @@ function ensureDefaults(){
     if(!it.zone) it.zone = DEFAULT_ZONE;
     if(!it.category) it.category = DEFAULT_CAT;
     if(!it.keywords) it.keywords = [];
-    if(!it.replies && it.reply){
-      it.replies = {soft: it.reply, neutral: it.reply, firm: it.reply};
-      delete it.reply;
+    
+    // ✅ 資料遷移：如果有舊的 replies 物件，轉成單一 reply (優先取 soft)
+    if(it.replies && !it.reply){
+        it.reply = it.replies.soft || it.replies.neutral || it.replies.firm || "";
+        delete it.replies; // 清理舊資料
     }
-    if(!it.replies) it.replies = {soft:"", neutral:"", firm:""};
+    if(!it.reply) it.reply = "";
+
     return it;
   });
   saveJSON(LS_ITEMS, items);
 
   used = loadJSON(LS_USED, {});
   fav  = loadJSON(LS_FAV, {});
-  tone = localStorage.getItem(LS_TONE) || "soft";
   syn  = loadJSON(LS_SYN, defaultSyn);
 
   const loadedZones = loadJSON(LS_ZONES, null);
@@ -870,7 +844,7 @@ function scoreItem(item, qParts){
   if(!qParts.length) return 0;
   const text = normalize([
     item.zone, item.title, item.category, (item.keywords||[]).join(","),
-    item.replies?.soft, item.replies?.neutral, item.replies?.firm
+    item.reply
   ].join(" "));
   const kwText = normalize((item.keywords||[]).join(" "));
   let score = 0;
@@ -893,7 +867,6 @@ const elHint = document.getElementById("hint");
 const elSynHint = document.getElementById("synHint");
 const elOnlyFav = document.getElementById("onlyFav");
 const elOnlyRecent = document.getElementById("onlyRecent");
-const toneButtons = [...document.querySelectorAll(".seg button[data-tone]")];
 const viewButtons = [...document.querySelectorAll(".seg button[data-view]")];
 
 const elZoneList = document.getElementById("zoneList");
@@ -1183,24 +1156,15 @@ function editItem(it){
   const kw = prompt("關鍵字（逗號分隔）", (it.keywords||[]).join(","));
   if(kw === null) return;
 
-  const soft = prompt("🧸溫柔版", it.replies?.soft || "");
-  if(soft === null) return;
-
-  const neutral = prompt("🙂中性版（留空＝沿用溫柔版）", it.replies?.neutral || "");
-  if(neutral === null) return;
-
-  const firm = prompt("👠強勢版（留空＝沿用溫柔版）", it.replies?.firm || "");
-  if(firm === null) return;
+  // ✅ 只問一次回覆內容
+  const reply = prompt("回覆內容", it.reply || "");
+  if(reply === null) return;
 
   it.zone = (zone.trim() || DEFAULT_ZONE);
   it.category = (category.trim() || DEFAULT_CAT);
   it.title = (title.trim() || it.title);
   it.keywords = (kw||"").split(",").map(s=>s.trim()).filter(Boolean);
-  it.replies = {
-    soft: soft,
-    neutral: (neutral.trim() ? neutral : soft),
-    firm: (firm.trim() ? firm : soft)
-  };
+  it.reply = reply; // ✅
 
   saveJSON(LS_ITEMS, items);
   ensureZoneCatExist(it.zone, it.category);
@@ -1228,13 +1192,7 @@ function deleteItem(it){
   syncNow();
 }
 
-/** ========== tone & view & render ========== */
-function setTone(t){
-  tone = t;
-  localStorage.setItem(LS_TONE, tone);
-  toneButtons.forEach(b => b.classList.toggle("active", b.dataset.tone === tone));
-  render();
-}
+/** ========== view & render ========== */
 function setView(v){
   viewMode = v;
   localStorage.setItem(LS_VIEW, viewMode);
@@ -1253,7 +1211,7 @@ function render(){
   const qParts = q ? expandQuery(q) : [];
   elSynHint.textContent = q ? `同義字擴展：${qParts.slice(0,10).join("、")}${qParts.length>10?"…":""}` : "同義字擴展：輸入關鍵字後會自動顯示";
   elHint.textContent = q
-    ? `搜尋：「${q}」｜語氣：${tone==="soft"?"溫柔":tone==="neutral"?"中性":"強勢"}｜預覽：${viewMode==="card"?"卡片":"條列"}`
+    ? `搜尋：「${q}」｜預覽：${viewMode==="card"?"卡片":"條列"}`
     : "提示：可先選「區域」再搜尋（例如：客戶溝通＋太貴）";
 
   let filtered = items.filter(it => {
@@ -1289,8 +1247,7 @@ function render(){
       if(!it) return;
 
       if(act === "copy"){
-        const text = (it.replies?.[tone] || it.replies?.soft || "");
-        await copyText(text);
+        await copyText(it.reply || "");
         used[id] = Date.now();
         saveJSON(LS_USED, used);
         render();
@@ -1339,7 +1296,9 @@ function renderCardView(filtered){
       .map(k => `<span class="tag">${escapeHtml(k)}</span>`).join("");
 
     const usedTime = used[it.id] ? new Date(used[it.id]).toLocaleString() : "—";
-    const replyText = (it.replies?.[tone] || it.replies?.soft || "");
+    
+    // ✅ 直接取用單一 reply
+    const replyText = it.reply || "";
 
     const titleHtml = highlightEscaped(escapeHtml(it.title), hits);
     const replyHtml = highlightEscaped(escapeHtml(replyText), hits);
@@ -1388,7 +1347,7 @@ function renderListView(filtered){
       .map(k => `<span class="tag">${escapeHtml(k)}</span>`).join("");
 
     const usedTime = used[it.id] ? new Date(used[it.id]).toLocaleString() : "—";
-    const replyText = (it.replies?.[tone] || it.replies?.soft || "");
+    const replyText = it.reply || "";
 
     const titleHtml = highlightEscaped(escapeHtml(it.title), hits);
     const replyHtml = highlightEscaped(escapeHtml(replyText), hits);
@@ -1450,7 +1409,6 @@ elSort.addEventListener("change", render);
 elOnlyFav.addEventListener("change", render);
 elOnlyRecent.addEventListener("change", render);
 
-toneButtons.forEach(b => b.addEventListener("click", () => setTone(b.dataset.tone)));
 viewButtons.forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
 
 /** Add zone/cat manager */
@@ -1495,14 +1453,13 @@ document.getElementById("add").addEventListener("click", () => {
   const category = elNewCat.value || DEFAULT_CAT;
   const title = document.getElementById("newTitle").value.trim();
   const kw = document.getElementById("newKw").value.split(",").map(s=>s.trim()).filter(Boolean);
-  const soft = document.getElementById("newReplySoft").value.trim();
-  const neutral = document.getElementById("newReplyNeutral").value.trim() || soft;
-  const firm = document.getElementById("newReplyFirm").value.trim() || soft;
+  const reply = document.getElementById("newReply").value.trim();
 
-  if(!title || !soft) return toast("標題與溫柔版回覆必填");
+  if(!title || !reply) return toast("標題與回覆內容必填");
 
   const id = idgen();
-  items.push({id, zone, category, title, keywords: kw, replies: {soft, neutral, firm}});
+  // ✅ 結構簡化：只存 reply
+  items.push({id, zone, category, title, keywords: kw, reply: reply});
   saveJSON(LS_ITEMS, items);
 
   if(!zones.includes(zone)){ zones.push(zone); }
@@ -1512,7 +1469,7 @@ document.getElementById("add").addEventListener("click", () => {
 
   syncNow();
 
-  ["newTitle","newKw","newReplySoft","newReplyNeutral","newReplyFirm"].forEach(i => document.getElementById(i).value = "");
+  ["newTitle","newKw","newReply"].forEach(i => document.getElementById(i).value = "");
   refreshAllSelectors(true);
   renderZoneManager();
   renderCatManager();
@@ -1533,9 +1490,9 @@ function download(filename, text) {
 }
 document.getElementById("exportBtn").addEventListener("click", () => {
   const payload = {
-    version: 2,
+    version: 3, // Version bump
     exportedAt: new Date().toISOString(),
-    items, used, fav, tone, syn, zones, cats,
+    items, used, fav, syn, zones, cats,
     viewMode
   };
   download(`reply_library_backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2));
@@ -1555,23 +1512,25 @@ document.getElementById("filePick").addEventListener("change", async (e) => {
     items = obj.items;
     used = obj.used && typeof obj.used==="object" ? obj.used : {};
     fav  = obj.fav  && typeof obj.fav==="object"  ? obj.fav  : {};
-    tone = obj.tone || "soft";
     syn  = obj.syn  && typeof obj.syn==="object"  ? obj.syn  : defaultSyn;
     zones = Array.isArray(obj.zones) ? obj.zones : [DEFAULT_ZONE];
     cats  = Array.isArray(obj.cats)  ? obj.cats  : [{zone:DEFAULT_ZONE,name:DEFAULT_CAT}];
     viewMode = (obj.viewMode === "list" || obj.viewMode === "card") ? obj.viewMode : (localStorage.getItem(LS_VIEW) || "card");
 
+    // ✅ Import 時也做一次結構檢查與遷移
     items = items.map(it => {
       if(!it.zone) it.zone = DEFAULT_ZONE;
       if(!it.category) it.category = DEFAULT_CAT;
       if(!it.keywords) it.keywords = [];
-      if(!it.replies && it.reply){
-        it.replies = {soft: it.reply, neutral: it.reply, firm: it.reply};
-        delete it.reply;
+      
+      if(it.replies && !it.reply){
+        it.reply = it.replies.soft || it.replies.neutral || it.replies.firm || "";
+        delete it.replies;
       }
-      if(!it.replies) it.replies = {soft:"", neutral:"", firm:""};
+      if(!it.reply) it.reply = "";
       return it;
     });
+
     if(!zones.includes(DEFAULT_ZONE)) zones.unshift(DEFAULT_ZONE);
     for(const z of zones){
       if(!cats.some(x => x.zone===z && x.name===DEFAULT_CAT)) cats.push({zone:z,name:DEFAULT_CAT});
@@ -1580,7 +1539,6 @@ document.getElementById("filePick").addEventListener("change", async (e) => {
     saveJSON(LS_ITEMS, items);
     saveJSON(LS_USED, used);
     saveJSON(LS_FAV, fav);
-    localStorage.setItem(LS_TONE, tone);
     saveJSON(LS_SYN, syn);
     saveJSON(LS_ZONES, zones);
     saveJSON(LS_CATS, cats);
@@ -1589,7 +1547,6 @@ document.getElementById("filePick").addEventListener("change", async (e) => {
     syncNow();
 
     refreshAllSelectors(false);
-    setTone(tone);
     setView(viewMode);
     renderZoneManager();
     renderCatManager();
@@ -1640,7 +1597,6 @@ refreshAllSelectors(true);
 renderZoneManager();
 renderCatManager();
 renderSynEditor();
-setTone(tone);
 setView(viewMode);
 render();
 </script>
