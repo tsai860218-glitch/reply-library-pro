@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>回覆素材庫 Pro（含來源紀錄）</title>
+  <title>回覆素材庫 Pro（修正刪除問題版）</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -564,6 +564,13 @@ function scheduleSaveToCloud() {
   pendingSaveTimer = setTimeout(saveToCloudNow, 900);
 }
 
+// ⚠️ 修正：立即存檔，不等待 (用於刪除操作)
+async function saveToCloudImmediate() {
+  if (!currentUser) return;
+  clearTimeout(pendingSaveTimer);
+  await saveToCloudNow();
+}
+
 async function loadFromCloud() {
   const snap = await getDoc(CLOUD_DOC);
 
@@ -801,13 +808,22 @@ let viewMode = localStorage.getItem(LS_VIEW) || "card";
 
 /** ========== init merge seed ========== */
 function ensureDefaults(){
-  const loadedItems = loadJSON(LS_ITEMS, null);
+  const rawItems = localStorage.getItem(LS_ITEMS);
+  const loadedItems = rawItems ? JSON.parse(rawItems) : [];
+  
   items = Array.isArray(loadedItems) ? loadedItems : [];
 
-  const map = new Map(items.map(x => [x.id, x]));
-  for(const s of seedItems) if(!map.has(s.id)) map.set(s.id, s);
+  // ⚠️ 修正：只有在「完全沒有資料（例如第一次開啟）」時，才載入預設範例
+  // 一旦有資料（即使 items 為空陣列但 key 存在），就不會再自動把範例塞回去
+  if (!rawItems || (Array.isArray(loadedItems) && loadedItems.length === 0 && !localStorage.getItem(LS_ZONES))) {
+      // 只有當真的是「全新白紙」時，才加入預設範例
+      const map = new Map(items.map(x => [x.id, x]));
+      for(const s of seedItems) if(!map.has(s.id)) map.set(s.id, s);
+      items = Array.from(map.values());
+  }
 
-  items = Array.from(map.values()).map(it => {
+  // 結構檢查與遷移
+  items = items.map(it => {
     if(!it.zone) it.zone = DEFAULT_ZONE;
     if(!it.category) it.category = DEFAULT_CAT;
     if(!it.keywords) it.keywords = [];
@@ -1236,7 +1252,9 @@ function deleteItem(it){
 
   render();
   toast("已刪除素材");
-  syncNow();
+  
+  // ⚠️ 修正：刪除時立即上傳，避免重整還原
+  saveToCloudImmediate();
 }
 
 /** ========== view & render ========== */
