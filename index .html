@@ -1,0 +1,1481 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>回覆素材庫 Pro（可自訂區域/子分類）</title>
+
+  <!-- Google Fonts：Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#4f46e5" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%234f46e5'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-size='92'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+
+      --gray-100:#f2f4f7;
+      --gray-200:#eaecf0;
+      --gray-300:#d0d5dd;
+
+      --indigo-50:#eef2ff;
+      --indigo-100:#e0e7ff;
+      --indigo-600:#4f46e5;
+      --indigo-700:#4338ca;
+
+      --danger-200:#fecdd3;
+      --danger-700:#9f1239;
+
+      --shadow: 0 10px 28px rgba(16,24,40,.10);
+      --shadow-soft: 0 6px 18px rgba(16,24,40,.08);
+      --radius: 16px;
+      --radius-sm: 12px;
+
+      --tap: 44px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      font-family:"Noto Sans TC",system-ui,-apple-system,sans-serif;
+      margin:0;background:var(--bg);color:var(--text)
+    }
+    .wrap{max-width:1040px;margin:0 auto;padding:18px}
+    .card{
+      background:var(--surface);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow:var(--shadow-soft);
+      margin:10px 0;
+      border:1px solid rgba(234,236,240,.8);
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    input,select,button,textarea{font:inherit}
+
+    .search{
+      flex:1;min-width:240px;
+      height:var(--tap);
+      padding:12px 14px;
+      border:1px solid var(--gray-300);
+      border-radius:var(--radius-sm);
+      outline:none;background:#fff;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    .search:focus{
+      border-color:rgba(79,70,229,.55);
+      box-shadow:0 0 0 4px rgba(79,70,229,.14);
+    }
+
+    .select{
+      height:var(--tap);
+      padding:10px 12px;
+      border:1px solid var(--gray-300);
+      border-radius:var(--radius-sm);
+      background:#fff;
+      outline:none;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    .select:focus{
+      border-color:rgba(79,70,229,.55);
+      box-shadow:0 0 0 4px rgba(79,70,229,.14);
+    }
+
+    button{
+      min-height:var(--tap);
+      padding:10px 12px;
+      border:0;border-radius:var(--radius-sm);
+      cursor:pointer;
+      transition:transform .04s, background .15s, border-color .15s, box-shadow .15s, color .15s;
+      touch-action:manipulation;
+    }
+    button:active{ transform: translateY(1px); }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    /* 按鈕三層：主要 / 次要 / 功能 */
+    .btn{ /* 主要（實心） */
+      background:var(--indigo-600);color:#fff;
+      box-shadow:0 8px 18px rgba(79,70,229,.20);
+    }
+    .btn:hover{ background:var(--indigo-700); }
+    .btn2{ /* 功能（淺灰） */
+      background:var(--gray-100);color:var(--text);
+    }
+    .btn2:hover{ background:var(--gray-200); }
+    .btn3{ /* 次要（外框） */
+      background:#fff;color:var(--indigo-700);
+      border:1px solid rgba(79,70,229,.35);
+    }
+    .btn3:hover{
+      background:var(--indigo-50);
+      border-color:rgba(79,70,229,.55);
+    }
+
+    .btnDanger{
+      background:#fff;
+      border:1px solid var(--danger-200);
+      color:var(--danger-700);
+    }
+    .btnDanger:hover{ background:#fff1f2; }
+
+    .btnSmall{min-height:36px;padding:8px 10px;border-radius:12px}
+
+    /* 標籤：粉彩底＋深色字 */
+    .tag{
+      display:inline-block;
+      background:var(--indigo-50);
+      color:#3730a3;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      margin-right:6px;
+      margin-top:6px;
+      border:1px solid rgba(79,70,229,.12);
+    }
+    .chip{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;background:var(--gray-100);color:#344054;border:1px solid rgba(208,213,221,.8)}
+
+    .small{font-size:12px;color:var(--muted)}
+    .title{font-weight:700;font-size:18px;margin:4px 0 0}
+    .kws{margin-top:6px}
+    .reply{white-space:pre-wrap;line-height:1.65;margin-top:10px}
+    .muted{color:#98a2b3}
+
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+    .pill{
+      background:var(--indigo-600);color:#fff;
+      padding:6px 10px;border-radius:999px;font-size:12px;
+      box-shadow:0 10px 24px rgba(79,70,229,.20);
+    }
+
+    .toast{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:16px;
+      background:var(--text);color:#fff;
+      padding:10px 14px;border-radius:999px;
+      opacity:0;pointer-events:none;transition:.2s
+    }
+    .toast.show{opacity:1}
+
+    textarea{
+      width:100%;min-height:120px;
+      border:1px solid var(--gray-300);
+      border-radius:var(--radius-sm);
+      padding:12px;
+      outline:none;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    textarea:focus{
+      border-color:rgba(79,70,229,.55);
+      box-shadow:0 0 0 4px rgba(79,70,229,.14);
+    }
+
+    details summary{cursor:pointer}
+
+    /* 語氣切換器：iOS Segmented */
+    .seg{
+      display:inline-flex;
+      padding:4px;
+      border:1px solid var(--gray-300);
+      border-radius:14px;
+      background:var(--gray-100);
+      gap:4px;
+    }
+    .seg button{
+      min-height:36px;
+      border-radius:12px;
+      background:transparent;
+      border:0;
+      padding:8px 12px;
+      color:#344054;
+    }
+    .seg button.active{
+      background:#fff;
+      color:var(--indigo-700);
+      box-shadow:0 6px 14px rgba(16,24,40,.08);
+    }
+
+    /* 額外：預覽切換（卡片/條列） */
+    .viewSeg{ margin-left:auto; }
+    .divider{height:1px;background:rgba(234,236,240,.9);margin:10px 0}
+    .warn{background:#fff7ed;border:1px solid #fed7aa}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width: 860px){
+      .grid2{grid-template-columns:1fr}
+      .wrap{padding:14px}
+      .row{gap:8px}
+      .viewSeg{ margin-left:0; }
+      button, .select, .search{ width:100%; }
+      .seg{ width:100%; justify-content:space-between; }
+      .seg button{ flex:1; }
+    }
+
+    .listItem{
+      display:flex;gap:8px;align-items:center;justify-content:space-between;
+      border:1px solid rgba(234,236,240,.9);
+      border-radius:14px;
+      padding:12px;
+      margin-top:8px;
+      background:#fff;
+    }
+    .listItemLeft{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    .inputSlim{
+      height:var(--tap);
+      padding:10px 12px;border:1px solid var(--gray-300);
+      border-radius:var(--radius-sm);outline:none;background:#fff;
+    }
+    .inputSlim:focus{
+      border-color:rgba(79,70,229,.55);
+      box-shadow:0 0 0 4px rgba(79,70,229,.14);
+    }
+
+    /* 條列式預覽樣式 */
+    .resultList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .resultRow{
+      background:#fff;
+      border:1px solid rgba(234,236,240,.95);
+      border-radius:18px;
+      padding:12px 12px;
+      box-shadow:0 10px 26px rgba(16,24,40,.06);
+    }
+    .resultRowTop{
+      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+    }
+    .resultRowTitle{
+      font-weight:700;
+      font-size:16px;
+      margin-top:4px;
+    }
+    .resultRowMeta{display:flex;gap:8px;flex-wrap:wrap}
+    .resultRowActions{display:flex;gap:8px;flex-wrap:wrap}
+    .resultRowReply{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(238,242,255,.55);
+      border:1px solid rgba(79,70,229,.10);
+      white-space:pre-wrap;line-height:1.65;
+    }
+
+    /* ✅ TOP3：搜尋高亮 */
+    mark.hl{
+      background: rgba(79,70,229,.14);
+      color: inherit;
+      padding: 0 .12em;
+      border-radius: 6px;
+    }
+
+    /* ✅ TOP3：條列收合（2行） */
+    .clamp2{
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:2;
+      overflow:hidden;
+    }
+
+    /* ✅ TOP3：條列右側固定操作（grid） */
+    .resultRowTop{
+      display:grid !important;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items:start;
+    }
+    .resultRowActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-content:flex-start;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="small">區域/子分類可自訂（新增/刪除/編輯）｜刪除分類會自動改成「未分類」不會刪素材</div>
+        <div class="title">📚 回覆素材庫 Pro</div>
+      </div>
+      <div class="row" style="align-items:center">
+        <div class="pill" id="countPill">0 則</div>
+        <button class="btn3" id="installHint">📲 加到桌面</button>
+      </div>
+    </div>
+
+    <!-- 搜尋區 -->
+    <div class="card">
+      <div class="row">
+        <input id="q" class="search" placeholder="例：太貴 / 櫃檯壓力 / 派工 / 分期 / 不好意思…（可輸入多個詞）">
+
+        <select id="zone" class="select">
+          <option value="">全部區域</option>
+        </select>
+
+        <select id="cat" class="select">
+          <option value="">全部子分類</option>
+        </select>
+
+        <select id="sort" class="select">
+          <option value="score">排序：最符合</option>
+          <option value="used">排序：最近使用</option>
+          <option value="fav">排序：常用置頂</option>
+        </select>
+
+        <button class="btn2" id="clear">清空</button>
+      </div>
+
+      <div class="row" style="margin-top:10px;align-items:center">
+        <label class="small"><input type="checkbox" id="onlyFav"> 只看常用</label>
+        <label class="small"><input type="checkbox" id="onlyRecent"> 只看最近用過</label>
+
+        <div class="seg" title="同一素材可切換三種語氣">
+          <button class="active" data-tone="soft">🧸溫柔</button>
+          <button data-tone="neutral">🙂中性</button>
+          <button data-tone="firm">👠強勢</button>
+        </div>
+
+        <!-- ✅ 預覽切換鍵 -->
+        <div class="seg viewSeg" title="切換預覽樣式">
+          <button class="active" data-view="card">🧩 卡片</button>
+          <button data-view="list">📄 條列</button>
+        </div>
+
+        <span class="small muted" id="hint"></span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="small muted" id="synHint"></div>
+        <div class="row" style="gap:8px">
+          <button class="btn3" id="exportBtn">⬇️ 匯出備份(JSON)</button>
+          <button class="btn3" id="importBtn">⬆️ 匯入(JSON)</button>
+          <input type="file" id="filePick" accept="application/json" style="display:none" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 分類管理 -->
+    <div class="card">
+      <details>
+        <summary class="small">🧩 分類管理（區域/子分類：新增、刪除、編輯）</summary>
+        <div style="margin-top:12px" class="grid2">
+          <!-- Zones -->
+          <div class="card" style="box-shadow:none">
+            <div class="title" style="font-size:16px">區域（大分類）</div>
+            <div class="small muted">例如：團隊溝通 / 客戶溝通 / 店務/櫃檯 / 售後/派工</div>
+
+            <div class="row" style="margin-top:10px">
+              <input id="zoneNew" class="inputSlim" style="flex:1;min-width:220px" placeholder="新增區域名稱">
+              <button class="btn btnSmall" id="zoneAdd">新增</button>
+            </div>
+
+            <div id="zoneList"></div>
+          </div>
+
+          <!-- Categories -->
+          <div class="card" style="box-shadow:none">
+            <div class="title" style="font-size:16px">子分類（小分類）</div>
+            <div class="small muted">子分類必須隸屬某個區域（例如：客戶溝通 → 價格/邀約/跟進）</div>
+
+            <div class="row" style="margin-top:10px">
+              <select id="catZoneNew" class="select" style="flex:1;min-width:220px"></select>
+              <input id="catNew" class="inputSlim" style="flex:2;min-width:220px" placeholder="新增子分類名稱">
+              <button class="btn btnSmall" id="catAdd">新增</button>
+            </div>
+
+            <div id="catList"></div>
+          </div>
+        </div>
+
+        <div class="small muted" style="margin-top:10px">
+          刪除區域/子分類時：素材不會被刪除，會自動改成 <span class="chip">未分類</span>。
+        </div>
+      </details>
+    </div>
+
+    <!-- 新增素材 -->
+    <div class="card">
+      <details>
+        <summary class="small">➕ 新增素材（區域/子分類可下拉，也可輸入後加入清單）</summary>
+        <div style="margin-top:10px">
+          <div class="row">
+            <select id="newZone" class="select" style="flex:1;min-width:240px"></select>
+            <input id="newZoneCustom" class="inputSlim" style="flex:1;min-width:240px" placeholder="或輸入新區域（可留空）">
+            <button class="btn3 btnSmall" id="newZoneApply">加入區域</button>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <select id="newCat" class="select" style="flex:1;min-width:240px"></select>
+            <input id="newCatCustom" class="inputSlim" style="flex:1;min-width:240px" placeholder="或輸入新子分類（可留空）">
+            <button class="btn3 btnSmall" id="newCatApply">加入子分類</button>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <input id="newTitle" class="search" placeholder="標題（例：客戶嫌貴怎麼回）">
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <input id="newKw" class="search" placeholder="關鍵字（逗號分隔，如：太貴,價格,分攤）">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="small muted">🧸溫柔版</div>
+          <textarea id="newReplySoft" placeholder="回覆內容（溫柔同理）"></textarea>
+
+          <div class="small muted" style="margin-top:10px">🙂中性版</div>
+          <textarea id="newReplyNeutral" placeholder="回覆內容（清楚中性，可留空=沿用溫柔版）"></textarea>
+
+          <div class="small muted" style="margin-top:10px">👠強勢版</div>
+          <textarea id="newReplyFirm" placeholder="回覆內容（立場明確，可留空=沿用溫柔版）"></textarea>
+
+          <div class="row" style="margin-top:10px;justify-content:flex-end">
+            <button class="btn" id="add">新增</button>
+          </div>
+
+          <div class="small muted">素材會存到此瀏覽器 localStorage（不會上傳）。</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- 同義字 -->
+    <div class="card warn">
+      <details>
+        <summary class="small">🧠 同義字字典（可直接改）</summary>
+        <div style="margin-top:10px" class="small muted">
+          你打「太貴」會自動包含「價格/費用/預算/貴」等同義字。
+        </div>
+        <textarea id="synEditor" class="mono"></textarea>
+        <div class="row" style="margin-top:10px;justify-content:flex-end">
+          <button class="btn3" id="synReset">重置</button>
+          <button class="btn" id="synSave">儲存字典</button>
+        </div>
+      </details>
+    </div>
+
+    <div id="list"></div>
+  </div>
+
+  <div class="toast" id="toast">已複製</div>
+
+<script>
+/** ========== PWA：動態 manifest（單檔即可） ========== */
+(function injectManifest(){
+  const manifest = {
+    name: "回覆素材庫 Pro",
+    short_name: "素材庫",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#f6f7fb",
+    theme_color: "#4f46e5",
+    icons: [
+      {
+        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%234f46e5'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-size='260'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E",
+        sizes: "512x512",
+        type: "image/svg+xml"
+      }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("link");
+  link.rel = "manifest";
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+/** ========== keys ========== */
+const LS_ITEMS = "reply_items_v2";
+const LS_USED  = "reply_used_v2";
+const LS_FAV   = "reply_fav_v2";
+const LS_TONE  = "reply_tone_v2";
+const LS_SYN   = "reply_syn_v2";
+const LS_ZONES = "reply_zones_v2";
+const LS_CATS  = "reply_cats_v2";
+const LS_VIEW  = "reply_view_v2"; // ✅ view mode
+
+/** ========== defaults ========== */
+const DEFAULT_ZONE = "未分類";
+const DEFAULT_CAT  = "未分類";
+
+const seedItems = [
+  {
+    id: "p_price_1",
+    zone: "客戶溝通",
+    title: "價格太貴（同理→說明→給選擇）",
+    category: "價格",
+    keywords: ["太貴","價格","費用","預算","貴","分攤"],
+    replies: {
+      soft: "我懂～聽到費用第一反應真的會覺得有點高🥺\n\n我跟妳說明一下：這個是「材料＋施工」的標準收費，所以金額會是這樣。\n如果現場需要額外拉電或改管線，技師才會依實際狀況另外報價。\n\n妳如果希望，我們也可以一起想個妳比較舒服的做法（例如分段/分攤）。",
+      neutral: "跟妳說明一下：此項目費用為「材料＋施工」的標準收費。\n若現場需要額外拉電/改管線，技師會依實際狀況另外報價。\n如果你想，我也可以提供幾種處理方式讓你選擇（例如分段/分攤）。",
+      firm: "我理解你在意費用。\n但這項目是「材料＋施工」的標準收費，所以金額固定。\n若現場有額外施工需求，技師才會另外報價。\n你方便的話，我們就依標準流程安排；若要暫緩也沒問題。"
+    }
+  },
+  {
+    id: "p_counter_1",
+    zone: "店務/櫃檯",
+    title: "面對陌生客人壓力大（櫃檯一整天）",
+    category: "安撫",
+    keywords: ["壓力","緊張","陌生","櫃檯","害怕","想哭","客人"],
+    replies: {
+      soft: "我懂你現在那種壓力🥺 先不用逼自己一定要很會聊。\n你明天只要做到 3 件事就很穩：\n1) 微笑＋固定開場\n2) 聽清楚需求、重複一次確認\n3) 不確定就說「我幫您確認一下」\n\n固定開場：\n「您好～今天想了解/需要我幫您什麼呢？」",
+      neutral: "明天你可以用固定流程降低壓力：\n1) 先問需求：您好～今天需要我幫什麼？\n2) 需求複述確認：好的我再確認一下…\n3) 不確定就說：我幫您確認一下。\n照流程走就不會慌。",
+      firm: "你不需要討好所有人，你只需要把流程做好。\n固定開場、確認需求、需要就轉交/請同事協助。\n把你能控制的事做到位，就夠專業了。"
+    }
+  },
+  {
+    id: "p_service_1",
+    zone: "售後/派工",
+    title: "派工時間確認（3-4 行）",
+    category: "時間確認",
+    keywords: ["派工","預約","技師","施工","安裝","不要週二"],
+    replies: {
+      soft: "阿姨早安～跟妳確認一下派工備註：\n1) 分流改鵝頸（需要加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 時間：盡量不要排週二\n這樣寫有沒有漏掉什麼呢？",
+      neutral: "跟您確認派工備註：\n1) 分流改鵝頸（加裝鵝頸）\n2) 地點：八里龍米路一段237號10樓\n3) 派工：避免週二\n請問是否正確？",
+      firm: "我這邊先依以下內容備註派工：分流改鵝頸、地點八里龍米路一段237號10樓、避免週二。\n若有其他限制請直接補充。"
+    }
+  },
+  {
+    id: "p_team_1",
+    zone: "團隊溝通",
+    title: "行程討論提醒（不指責、把規則講清楚）",
+    category: "規範/提醒",
+    keywords: ["提醒","規則","行程","討論","注意","禮貌"],
+    replies: {
+      soft: "大家提醒一下～🙏 之後如果需要在別人的車上吃東西，先問一下車主比較禮貌也避免誤會。\n我們都希望行程開心順順的～謝謝大家配合❤️",
+      neutral: "提醒大家：若要在他人車上吃東西，請先徵詢車主同意，避免造成不舒服或誤會。謝謝配合。",
+      firm: "統一規範：車上飲食請先問過車主同意，未經同意請不要在車內食用。之後請照這個規則走。"
+    }
+  }
+];
+
+const defaultSyn = {
+  "太貴": ["貴","價格","費用","預算","價錢","成本"],
+  "派工": ["技師","施工","安裝","到府","預約"],
+  "緊張": ["壓力","害怕","焦慮","想哭","不安"],
+  "分期": ["刷卡","期數","月付","信用卡","每期"],
+  "道歉": ["不好意思","抱歉","對不起","失禮"],
+  "團隊": ["夥伴","群組","領導","會議","行程","規範"],
+  "客戶": ["阿姨","顧客","客人","客戶端","對方"]
+};
+
+/** ========== utils ========== */
+function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escapeAttr(s){ return (s||"").replace(/"/g,"&quot;"); }
+function normalize(s){ return (s||"").toString().toLowerCase().trim(); }
+function toast(msg="完成") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 900);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast("已複製"); }
+  catch {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta);
+    toast("已複製");
+  }
+}
+function idgen(){ return "u_" + Math.random().toString(16).slice(2); }
+
+/* ✅ TOP3：命中詞 / 高亮 */
+function getHits(item, qParts){
+  if(!qParts?.length) return [];
+  const text = normalize([
+    item.zone, item.title, item.category, (item.keywords||[]).join(","),
+    item.replies?.soft, item.replies?.neutral, item.replies?.firm
+  ].join(" "));
+  const hits = [];
+  for(const p of qParts){
+    if(!p || p.length < 2) continue;
+    if(text.includes(p)) hits.push(p);
+  }
+  return Array.from(new Set(hits)).slice(0,8);
+}
+function highlightEscaped(escapedText, terms){
+  if(!terms?.length) return escapedText;
+  let out = escapedText;
+  const sorted = [...terms].sort((a,b)=>b.length-a.length);
+  for(const t of sorted){
+    const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    out = out.replace(re, (m)=>`<mark class="hl">${m}</mark>`);
+  }
+  return out;
+}
+const expandedIds = new Set();
+
+/** ========== storage load/save ========== */
+function loadJSON(key, fallback){
+  try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch{ return fallback; }
+}
+function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
+
+/** ========== state ========== */
+let items = [];
+let used = {};
+let fav = {};
+let tone = "soft";
+let syn = {};
+let zones = [];
+let cats = [];
+let viewMode = localStorage.getItem(LS_VIEW) || "card";
+
+/** ========== init merge seed ========== */
+function ensureDefaults(){
+  const loadedItems = loadJSON(LS_ITEMS, null);
+  items = Array.isArray(loadedItems) ? loadedItems : [];
+
+  const map = new Map(items.map(x => [x.id, x]));
+  for(const s of seedItems) if(!map.has(s.id)) map.set(s.id, s);
+
+  items = Array.from(map.values()).map(it => {
+    if(!it.zone) it.zone = DEFAULT_ZONE;
+    if(!it.category) it.category = DEFAULT_CAT;
+    if(!it.keywords) it.keywords = [];
+    if(!it.replies && it.reply){
+      it.replies = {soft: it.reply, neutral: it.reply, firm: it.reply};
+      delete it.reply;
+    }
+    if(!it.replies) it.replies = {soft:"", neutral:"", firm:""};
+    return it;
+  });
+  saveJSON(LS_ITEMS, items);
+
+  used = loadJSON(LS_USED, {});
+  fav  = loadJSON(LS_FAV, {});
+  tone = localStorage.getItem(LS_TONE) || "soft";
+  syn  = loadJSON(LS_SYN, defaultSyn);
+
+  const loadedZones = loadJSON(LS_ZONES, null);
+  const loadedCats  = loadJSON(LS_CATS, null);
+
+  if(Array.isArray(loadedZones) && loadedZones.length){
+    zones = loadedZones;
+  } else {
+    zones = Array.from(new Set(items.map(x => x.zone))).filter(Boolean);
+  }
+  if(!zones.includes(DEFAULT_ZONE)) zones.unshift(DEFAULT_ZONE);
+
+  if(Array.isArray(loadedCats) && loadedCats.length){
+    cats = loadedCats;
+  } else {
+    const set = new Set();
+    const out = [];
+    for(const it of items){
+      const z = it.zone || DEFAULT_ZONE;
+      const c = it.category || DEFAULT_CAT;
+      const k = z + "||" + c;
+      if(!set.has(k)){
+        set.add(k);
+        out.push({zone: z, name: c});
+      }
+    }
+    cats = out;
+  }
+
+  for(const z of zones){
+    if(!cats.some(x => x.zone===z && x.name===DEFAULT_CAT)){
+      cats.push({zone: z, name: DEFAULT_CAT});
+    }
+  }
+
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+  saveJSON(LS_SYN, syn);
+}
+
+function expandQuery(q){
+  const parts = normalize(q).split(/\s+/).filter(Boolean);
+  const expanded = new Set(parts);
+  for(const p of parts){
+    for(const [k, arr] of Object.entries(syn)){
+      const nk = normalize(k);
+      if (p === nk || nk.includes(p) || p.includes(nk)) {
+        expanded.add(nk);
+        (arr||[]).forEach(w => expanded.add(normalize(w)));
+      }
+    }
+  }
+  return Array.from(expanded).filter(Boolean);
+}
+
+function scoreItem(item, qParts){
+  if(!qParts.length) return 0;
+  const text = normalize([
+    item.zone, item.title, item.category, (item.keywords||[]).join(","),
+    item.replies?.soft, item.replies?.neutral, item.replies?.firm
+  ].join(" "));
+  const kwText = normalize((item.keywords||[]).join(" "));
+  let score = 0;
+  for (const p of qParts){
+    if (!p) continue;
+    if (text.includes(p)) score += 5;
+    if (p.length <= 2 && text.includes(p)) score += 2;
+    if (kwText.includes(p)) score += 6;
+  }
+  return score;
+}
+
+/** ========== DOM refs ========== */
+const elQ = document.getElementById("q");
+const elZone = document.getElementById("zone");
+const elCat = document.getElementById("cat");
+const elSort = document.getElementById("sort");
+const elCount = document.getElementById("countPill");
+const elHint = document.getElementById("hint");
+const elSynHint = document.getElementById("synHint");
+const elOnlyFav = document.getElementById("onlyFav");
+const elOnlyRecent = document.getElementById("onlyRecent");
+const toneButtons = [...document.querySelectorAll(".seg button[data-tone]")];
+const viewButtons = [...document.querySelectorAll(".seg button[data-view]")];
+
+const elZoneList = document.getElementById("zoneList");
+const elCatList  = document.getElementById("catList");
+
+const elNewZone = document.getElementById("newZone");
+const elNewZoneCustom = document.getElementById("newZoneCustom");
+const elNewCat = document.getElementById("newCat");
+const elNewCatCustom = document.getElementById("newCatCustom");
+
+const elZoneNew = document.getElementById("zoneNew");
+const elCatZoneNew = document.getElementById("catZoneNew");
+const elCatNew = document.getElementById("catNew");
+
+const synEditor = document.getElementById("synEditor");
+
+/** ========== selectors build ========== */
+function buildZoneOptions(selectEl, includeAllLabel){
+  const opts = [];
+  if(includeAllLabel) opts.push(`<option value="">${includeAllLabel}</option>`);
+  for(const z of zones){
+    opts.push(`<option value="${escapeAttr(z)}">${escapeHtml(z)}</option>`);
+  }
+  selectEl.innerHTML = opts.join("");
+}
+
+function buildCatOptions(selectEl, zoneValue, includeAllLabel){
+  const opts = [];
+  if(includeAllLabel) opts.push(`<option value="">${includeAllLabel}</option>`);
+  const list = zoneValue
+    ? cats.filter(x => x.zone === zoneValue).map(x => x.name)
+    : Array.from(new Set(cats.map(x => x.name)));
+
+  const uniq = Array.from(new Set(list)).filter(Boolean).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  for(const c of uniq){
+    opts.push(`<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`);
+  }
+  selectEl.innerHTML = opts.join("");
+}
+
+function refreshAllSelectors(keepSelection=true){
+  const prevZone = elZone.value;
+  const prevCat  = elCat.value;
+
+  buildZoneOptions(elZone, "全部區域");
+  if(keepSelection && zones.includes(prevZone)) elZone.value = prevZone;
+
+  buildCatOptions(elCat, elZone.value, "全部子分類");
+  if(keepSelection && prevCat){
+    const exists = Array.from(elCat.options).some(o => o.value === prevCat);
+    if(exists) elCat.value = prevCat;
+  }
+
+  buildZoneOptions(elNewZone, null);
+  if(!elNewZone.value) elNewZone.value = zones[0] || DEFAULT_ZONE;
+
+  buildCatOptions(elNewCat, elNewZone.value, null);
+  if(!elNewCat.value) elNewCat.value = DEFAULT_CAT;
+
+  buildZoneOptions(elCatZoneNew, null);
+  if(!elCatZoneNew.value) elCatZoneNew.value = zones[0] || DEFAULT_ZONE;
+}
+
+/** ========== management render ========== */
+function renderZoneManager(){
+  elZoneList.innerHTML = zones.map(z => {
+    const locked = (z === DEFAULT_ZONE);
+    return `
+      <div class="listItem">
+        <div class="listItemLeft">
+          <span class="chip">${locked ? "保留" : "可編輯"}</span>
+          <span class="tag">${escapeHtml(z)}</span>
+        </div>
+        <div class="row" style="gap:8px;align-items:center">
+          <button class="btn3 btnSmall" data-act="zoneEdit" data-zone="${escapeAttr(z)}" ${locked?"disabled":""}>編輯</button>
+          <button class="btnDanger btnSmall" data-act="zoneDel" data-zone="${escapeAttr(z)}" ${locked?"disabled":""}>刪除</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  elZoneList.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.act;
+      const z = btn.dataset.zone;
+      if(act === "zoneEdit") editZone(z);
+      if(act === "zoneDel") deleteZone(z);
+    });
+  });
+}
+
+function renderCatManager(){
+  const z = elCatZoneNew.value || DEFAULT_ZONE;
+  const list = cats.filter(x => x.zone === z).sort((a,b)=>a.name.localeCompare(b.name,'zh-Hant'));
+  elCatList.innerHTML = list.map(c => {
+    const locked = (c.name === DEFAULT_CAT);
+    return `
+      <div class="listItem">
+        <div class="listItemLeft">
+          <span class="chip">${escapeHtml(c.zone)}</span>
+          <span class="tag">${locked ? "未分類" : escapeHtml(c.name)}</span>
+        </div>
+        <div class="row" style="gap:8px;align-items:center">
+          <button class="btn3 btnSmall" data-act="catEdit" data-zone="${escapeAttr(c.zone)}" data-cat="${escapeAttr(c.name)}" ${locked?"disabled":""}>編輯</button>
+          <button class="btnDanger btnSmall" data-act="catDel" data-zone="${escapeAttr(c.zone)}" data-cat="${escapeAttr(c.name)}" ${locked?"disabled":""}>刪除</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  elCatList.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.act;
+      const z = btn.dataset.zone;
+      const c = btn.dataset.cat;
+      if(act === "catEdit") editCat(z,c);
+      if(act === "catDel") deleteCat(z,c);
+    });
+  });
+}
+
+/** ========== zone CRUD ========== */
+function addZone(name){
+  const z = (name||"").trim();
+  if(!z) return toast("請輸入區域名稱");
+  if(zones.includes(z)) return toast("這個區域已存在");
+  zones.push(z);
+  if(!cats.some(x => x.zone===z && x.name===DEFAULT_CAT)){
+    cats.push({zone: z, name: DEFAULT_CAT});
+  }
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+  refreshAllSelectors(true);
+  renderZoneManager();
+  renderCatManager();
+  toast("已新增區域");
+}
+
+function editZone(oldName){
+  const next = prompt(`編輯區域名稱：\n「${oldName}」→`, oldName);
+  if(next === null) return;
+  const newName = next.trim();
+  if(!newName) return toast("名稱不能空白");
+  if(newName === oldName) return;
+  if(zones.includes(newName)) return toast("已存在相同名稱");
+
+  zones = zones.map(z => z===oldName ? newName : z);
+  items = items.map(it => (it.zone===oldName ? ({...it, zone:newName}) : it));
+  cats = cats.map(x => (x.zone===oldName ? ({...x, zone:newName}) : x));
+
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+  saveJSON(LS_ITEMS, items);
+
+  refreshAllSelectors(false);
+  if(elZone.value === oldName) elZone.value = newName;
+
+  renderZoneManager();
+  renderCatManager();
+  render();
+  toast("已更新區域");
+}
+
+function deleteZone(name){
+  if(!confirm(`確定刪除區域「${name}」？\n\n素材不會被刪除，會自動改成「${DEFAULT_ZONE}」。\n該區域的子分類也會一併移除。`)) return;
+
+  zones = zones.filter(z => z !== name);
+  if(!zones.includes(DEFAULT_ZONE)) zones.unshift(DEFAULT_ZONE);
+
+  items = items.map(it => it.zone===name ? ({...it, zone: DEFAULT_ZONE, category: DEFAULT_CAT}) : it);
+  cats = cats.filter(x => x.zone !== name);
+
+  if(!cats.some(x => x.zone===DEFAULT_ZONE && x.name===DEFAULT_CAT)){
+    cats.push({zone: DEFAULT_ZONE, name: DEFAULT_CAT});
+  }
+
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+  saveJSON(LS_ITEMS, items);
+
+  if(elZone.value === name) elZone.value = "";
+  refreshAllSelectors(true);
+
+  renderZoneManager();
+  renderCatManager();
+  render();
+  toast("已刪除區域");
+}
+
+/** ========== category CRUD ========== */
+function addCat(zone, catName){
+  const z = (zone||DEFAULT_ZONE).trim() || DEFAULT_ZONE;
+  const c = (catName||"").trim();
+  if(!c) return toast("請輸入子分類名稱");
+
+  if(!zones.includes(z)) return toast("區域不存在（請先新增區域）");
+  if(cats.some(x => x.zone===z && x.name===c)) return toast("這個子分類已存在");
+
+  cats.push({zone:z, name:c});
+  saveJSON(LS_CATS, cats);
+
+  refreshAllSelectors(true);
+  renderCatManager();
+  toast("已新增子分類");
+}
+
+function editCat(zone, oldCat){
+  const next = prompt(`編輯子分類名稱（區域：${zone}）：\n「${oldCat}」→`, oldCat);
+  if(next === null) return;
+  const newCat = next.trim();
+  if(!newCat) return toast("名稱不能空白");
+  if(newCat === oldCat) return;
+  if(cats.some(x => x.zone===zone && x.name===newCat)) return toast("已存在相同名稱");
+
+  cats = cats.map(x => (x.zone===zone && x.name===oldCat) ? ({...x, name:newCat}) : x);
+  items = items.map(it => (it.zone===zone && it.category===oldCat) ? ({...it, category:newCat}) : it);
+
+  saveJSON(LS_CATS, cats);
+  saveJSON(LS_ITEMS, items);
+
+  refreshAllSelectors(false);
+  if(elZone.value===zone && elCat.value===oldCat) elCat.value = newCat;
+  if(elNewZone.value===zone && elNewCat.value===oldCat) elNewCat.value = newCat;
+
+  renderCatManager();
+  render();
+  toast("已更新子分類");
+}
+
+function deleteCat(zone, catName){
+  if(!confirm(`確定刪除子分類「${catName}」？（區域：${zone}）\n\n素材不會被刪除，會自動改成「${DEFAULT_CAT}」。`)) return;
+
+  cats = cats.filter(x => !(x.zone===zone && x.name===catName));
+  if(!cats.some(x => x.zone===zone && x.name===DEFAULT_CAT)){
+    cats.push({zone: zone, name: DEFAULT_CAT});
+  }
+
+  items = items.map(it => (it.zone===zone && it.category===catName) ? ({...it, category: DEFAULT_CAT}) : it);
+
+  saveJSON(LS_CATS, cats);
+  saveJSON(LS_ITEMS, items);
+
+  refreshAllSelectors(true);
+  renderCatManager();
+  render();
+  toast("已刪除子分類");
+}
+
+/** ✅ TOP3：素材管理（編輯/刪除/複製成新） */
+function ensureZoneCatExist(zone, category){
+  if(!zones.includes(zone)) zones.push(zone);
+  if(!cats.some(x => x.zone===zone && x.name===category)) cats.push({zone, name: category});
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+}
+function cloneItem(it){
+  const copy = structuredClone(it);
+  copy.id = idgen();
+  copy.title = `${it.title}（複製）`;
+  items.push(copy);
+  saveJSON(LS_ITEMS, items);
+  ensureZoneCatExist(copy.zone || DEFAULT_ZONE, copy.category || DEFAULT_CAT);
+  refreshAllSelectors(true);
+  renderZoneManager();
+  renderCatManager();
+  render();
+  toast("已複製成新素材");
+}
+function editItem(it){
+  const zone = prompt("區域（大分類）", it.zone || DEFAULT_ZONE);
+  if(zone === null) return;
+
+  const category = prompt("子分類（小分類）", it.category || DEFAULT_CAT);
+  if(category === null) return;
+
+  const title = prompt("標題", it.title || "");
+  if(title === null) return;
+
+  const kw = prompt("關鍵字（逗號分隔）", (it.keywords||[]).join(","));
+  if(kw === null) return;
+
+  const soft = prompt("🧸溫柔版", it.replies?.soft || "");
+  if(soft === null) return;
+
+  const neutral = prompt("🙂中性版（留空＝沿用溫柔版）", it.replies?.neutral || "");
+  if(neutral === null) return;
+
+  const firm = prompt("👠強勢版（留空＝沿用溫柔版）", it.replies?.firm || "");
+  if(firm === null) return;
+
+  it.zone = (zone.trim() || DEFAULT_ZONE);
+  it.category = (category.trim() || DEFAULT_CAT);
+  it.title = (title.trim() || it.title);
+  it.keywords = (kw||"").split(",").map(s=>s.trim()).filter(Boolean);
+  it.replies = {
+    soft: soft,
+    neutral: (neutral.trim() ? neutral : soft),
+    firm: (firm.trim() ? firm : soft)
+  };
+
+  saveJSON(LS_ITEMS, items);
+  ensureZoneCatExist(it.zone, it.category);
+
+  refreshAllSelectors(true);
+  renderZoneManager();
+  renderCatManager();
+  render();
+  toast("已更新素材");
+}
+function deleteItem(it){
+  if(!confirm(`確定刪除這則素材？\n\n${it.title}`)) return;
+  items = items.filter(x => x.id !== it.id);
+  delete used[it.id];
+  delete fav[it.id];
+  expandedIds.delete(it.id);
+
+  saveJSON(LS_ITEMS, items);
+  saveJSON(LS_USED, used);
+  saveJSON(LS_FAV, fav);
+
+  render();
+  toast("已刪除素材");
+}
+
+/** ========== tone & view & render ========== */
+function setTone(t){
+  tone = t;
+  localStorage.setItem(LS_TONE, tone);
+  toneButtons.forEach(b => b.classList.toggle("active", b.dataset.tone === tone));
+  render();
+}
+function setView(v){
+  viewMode = v;
+  localStorage.setItem(LS_VIEW, viewMode);
+  viewButtons.forEach(b => b.classList.toggle("active", b.dataset.view === viewMode));
+  render();
+}
+
+function render(){
+  const q = elQ.value;
+  const zone = elZone.value;
+  const cat = elCat.value;
+  const sort = elSort.value;
+  const onlyFav = elOnlyFav.checked;
+  const onlyRecent = elOnlyRecent.checked;
+
+  const qParts = q ? expandQuery(q) : [];
+  elSynHint.textContent = q ? `同義字擴展：${qParts.slice(0,10).join("、")}${qParts.length>10?"…":""}` : "同義字擴展：輸入關鍵字後會自動顯示";
+  elHint.textContent = q
+    ? `搜尋：「${q}」｜語氣：${tone==="soft"?"溫柔":tone==="neutral"?"中性":"強勢"}｜預覽：${viewMode==="card"?"卡片":"條列"}`
+    : "提示：可先選「區域」再搜尋（例如：客戶溝通＋太貴）";
+
+  let filtered = items.filter(it => {
+    if(zone && it.zone !== zone) return false;
+    if(cat && it.category !== cat) return false;
+    if(onlyFav && !fav[it.id]) return false;
+    if(onlyRecent && !used[it.id]) return false;
+    if(!qParts.length) return true;
+    return scoreItem(it, qParts) > 0;
+  });
+
+  if(sort === "score"){
+    filtered.sort((a,b) => scoreItem(b,qParts) - scoreItem(a,qParts) || ((used[b.id]||0)-(used[a.id]||0)));
+  } else if(sort === "used"){
+    filtered.sort((a,b) => (used[b.id]||0) - (used[a.id]||0));
+  } else if(sort === "fav"){
+    filtered.sort((a,b) => (fav[b.id]?1:0)-(fav[a.id]?1:0) || ((used[b.id]||0)-(used[a.id]||0)));
+  }
+
+  elCount.textContent = `${filtered.length} 則`;
+
+  const html = (viewMode === "list")
+    ? renderListView(filtered)
+    : renderCardView(filtered);
+
+  document.getElementById("list").innerHTML = html;
+
+  document.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      const it = items.find(x => x.id === id);
+      if(!it) return;
+
+      if(act === "copy"){
+        const text = (it.replies?.[tone] || it.replies?.soft || "");
+        await copyText(text);
+        used[id] = Date.now();
+        saveJSON(LS_USED, used);
+        render();
+      }
+      if(act === "fav"){
+        fav[id] = !fav[id];
+        if(!fav[id]) delete fav[id];
+        saveJSON(LS_FAV, fav);
+        render();
+      }
+
+      /* ✅ TOP3 actions */
+      if(act === "toggleExpand"){
+        if(expandedIds.has(id)) expandedIds.delete(id);
+        else expandedIds.add(id);
+        render();
+      }
+      if(act === "clone"){
+        cloneItem(it);
+      }
+      if(act === "edit"){
+        editItem(it);
+      }
+      if(act === "del"){
+        deleteItem(it);
+      }
+    });
+  });
+}
+
+function renderCardView(filtered){
+  const q = elQ.value;
+  const qParts = q ? expandQuery(q) : [];
+
+  return filtered.map(it => {
+    const tags = [
+      it.zone ? `<span class="tag">${escapeHtml(it.zone)}</span>` : "",
+      it.category ? `<span class="tag">${escapeHtml(it.category)}</span>` : "",
+      fav[it.id] ? `<span class="tag">常用</span>` : "",
+      used[it.id] ? `<span class="tag">最近</span>` : ""
+    ].join("");
+
+    const hits = getHits(it, qParts);
+
+    const kw = (it.keywords?.length ? it.keywords.slice(0,12) : [])
+      .map(k => `<span class="tag">${escapeHtml(k)}</span>`).join("");
+
+    const usedTime = used[it.id] ? new Date(used[it.id]).toLocaleString() : "—";
+    const replyText = (it.replies?.[tone] || it.replies?.soft || "");
+
+    const titleHtml = highlightEscaped(escapeHtml(it.title), hits);
+    const replyHtml = highlightEscaped(escapeHtml(replyText), hits);
+
+    return `
+      <div class="card">
+        <div class="small">${tags}</div>
+        <div class="title">${titleHtml}</div>
+        <div class="kws">${kw}</div>
+
+        <div class="small muted" style="margin-top:6px">
+          ${hits.length ? `命中：${hits.map(h=>escapeHtml(h)).join("、")}` : ""}
+        </div>
+
+        <div class="reply">${replyHtml}</div>
+
+        <div class="row" style="margin-top:10px;justify-content:space-between;align-items:center">
+          <div class="small muted">最近使用：${escapeHtml(usedTime)}</div>
+          <div class="row" style="gap:8px">
+            <button class="btn2" data-act="clone" data-id="${escapeAttr(it.id)}">複製成新</button>
+            <button class="btn3" data-act="edit" data-id="${escapeAttr(it.id)}">編輯</button>
+            <button class="btnDanger" data-act="del" data-id="${escapeAttr(it.id)}">刪除</button>
+            <button class="btn2" data-act="fav" data-id="${escapeAttr(it.id)}">${fav[it.id] ? "★ 取消常用" : "☆ 設為常用"}</button>
+            <button class="btn" data-act="copy" data-id="${escapeAttr(it.id)}">一鍵複製</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderListView(filtered){
+  const rows = filtered.map(it => {
+    const tags = [
+      it.zone ? `<span class="tag">${escapeHtml(it.zone)}</span>` : "",
+      it.category ? `<span class="tag">${escapeHtml(it.category)}</span>` : "",
+      fav[it.id] ? `<span class="tag">常用</span>` : "",
+      used[it.id] ? `<span class="tag">最近</span>` : ""
+    ].join("");
+
+    const q = elQ.value;
+    const qParts = q ? expandQuery(q) : [];
+    const hits = getHits(it, qParts);
+
+    const kw = (it.keywords?.length ? it.keywords.slice(0,10) : [])
+      .map(k => `<span class="tag">${escapeHtml(k)}</span>`).join("");
+
+    const usedTime = used[it.id] ? new Date(used[it.id]).toLocaleString() : "—";
+    const replyText = (it.replies?.[tone] || it.replies?.soft || "");
+
+    const titleHtml = highlightEscaped(escapeHtml(it.title), hits);
+    const replyHtml = highlightEscaped(escapeHtml(replyText), hits);
+
+    const isOpen = expandedIds.has(it.id);
+
+    return `
+      <div class="resultRow">
+        <div class="resultRowTop">
+          <div style="min-width:240px;">
+            <div class="resultRowMeta small">${tags}</div>
+            <div class="resultRowTitle">${titleHtml}</div>
+            <div class="kws">${kw}</div>
+
+            <div class="small muted" style="margin-top:6px">
+              最近使用：${escapeHtml(usedTime)}
+              ${hits.length ? `｜命中：${hits.map(h=>escapeHtml(h)).join("、")}` : ""}
+            </div>
+          </div>
+
+          <div class="resultRowActions">
+            <button class="btn3" data-act="toggleExpand" data-id="${escapeAttr(it.id)}">${isOpen ? "收合" : "展開"}</button>
+            <button class="btn2" data-act="clone" data-id="${escapeAttr(it.id)}">複製成新</button>
+            <button class="btn3" data-act="edit" data-id="${escapeAttr(it.id)}">編輯</button>
+            <button class="btnDanger" data-act="del" data-id="${escapeAttr(it.id)}">刪除</button>
+            <button class="btn3" data-act="fav" data-id="${escapeAttr(it.id)}">${fav[it.id] ? "★ 常用" : "☆ 常用"}</button>
+            <button class="btn" data-act="copy" data-id="${escapeAttr(it.id)}">複製</button>
+          </div>
+        </div>
+
+        <div class="resultRowReply ${isOpen ? "" : "clamp2"}">${replyHtml}</div>
+      </div>
+    `;
+  }).join("");
+
+  return `<div class="resultList">${rows}</div>`;
+}
+
+/** ========== events ========== */
+document.getElementById("clear").addEventListener("click", () => {
+  elQ.value = "";
+  elZone.value = "";
+  elCat.value = "";
+  elOnlyFav.checked = false;
+  elOnlyRecent.checked = false;
+  elSort.value = "score";
+  buildCatOptions(elCat, "", "全部子分類");
+  render();
+});
+
+elQ.addEventListener("input", render);
+elZone.addEventListener("change", () => {
+  buildCatOptions(elCat, elZone.value, "全部子分類");
+  elCat.value = "";
+  render();
+});
+elCat.addEventListener("change", render);
+elSort.addEventListener("change", render);
+elOnlyFav.addEventListener("change", render);
+elOnlyRecent.addEventListener("change", render);
+
+toneButtons.forEach(b => b.addEventListener("click", () => setTone(b.dataset.tone)));
+viewButtons.forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+
+/** Add zone/cat manager */
+document.getElementById("zoneAdd").addEventListener("click", () => {
+  addZone(elZoneNew.value);
+  elZoneNew.value = "";
+});
+document.getElementById("catAdd").addEventListener("click", () => {
+  addCat(elCatZoneNew.value, elCatNew.value);
+  elCatNew.value = "";
+});
+elCatZoneNew.addEventListener("change", renderCatManager);
+
+/** New item: zone/cat dependent */
+elNewZone.addEventListener("change", () => {
+  buildCatOptions(elNewCat, elNewZone.value, null);
+  if(!elNewCat.value) elNewCat.value = DEFAULT_CAT;
+});
+
+document.getElementById("newZoneApply").addEventListener("click", () => {
+  const z = elNewZoneCustom.value.trim();
+  if(!z) return toast("請輸入新區域");
+  addZone(z);
+  elNewZone.value = z;
+  buildCatOptions(elNewCat, z, null);
+  elNewCat.value = DEFAULT_CAT;
+  elNewZoneCustom.value = "";
+});
+
+document.getElementById("newCatApply").addEventListener("click", () => {
+  const z = elNewZone.value || DEFAULT_ZONE;
+  const c = elNewCatCustom.value.trim();
+  if(!c) return toast("請輸入新子分類");
+  addCat(z, c);
+  elNewCat.value = c;
+  elNewCatCustom.value = "";
+});
+
+/** Add item */
+document.getElementById("add").addEventListener("click", () => {
+  const zone = elNewZone.value || DEFAULT_ZONE;
+  const category = elNewCat.value || DEFAULT_CAT;
+  const title = document.getElementById("newTitle").value.trim();
+  const kw = document.getElementById("newKw").value.split(",").map(s=>s.trim()).filter(Boolean);
+  const soft = document.getElementById("newReplySoft").value.trim();
+  const neutral = document.getElementById("newReplyNeutral").value.trim() || soft;
+  const firm = document.getElementById("newReplyFirm").value.trim() || soft;
+
+  if(!title || !soft) return toast("標題與溫柔版回覆必填");
+
+  const id = idgen();
+  items.push({id, zone, category, title, keywords: kw, replies: {soft, neutral, firm}});
+  saveJSON(LS_ITEMS, items);
+
+  if(!zones.includes(zone)){ zones.push(zone); }
+  if(!cats.some(x => x.zone===zone && x.name===category)){ cats.push({zone, name: category}); }
+  saveJSON(LS_ZONES, zones);
+  saveJSON(LS_CATS, cats);
+
+  ["newTitle","newKw","newReplySoft","newReplyNeutral","newReplyFirm"].forEach(i => document.getElementById(i).value = "");
+  refreshAllSelectors(true);
+  renderZoneManager();
+  renderCatManager();
+  render();
+  toast("已新增素材");
+});
+
+/** Export/Import */
+function download(filename, text) {
+  const blob = new Blob([text], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const payload = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    items, used, fav, tone, syn, zones, cats,
+    viewMode
+  };
+  download(`reply_library_backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2));
+  toast("已匯出備份");
+});
+document.getElementById("importBtn").addEventListener("click", () => {
+  document.getElementById("filePick").click();
+});
+document.getElementById("filePick").addEventListener("change", async (e) => {
+  const file = e.target.files?.[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const obj = JSON.parse(text);
+    if(!obj || typeof obj!=="object" || !Array.isArray(obj.items)) return toast("格式不正確");
+
+    items = obj.items;
+    used = obj.used && typeof obj.used==="object" ? obj.used : {};
+    fav  = obj.fav  && typeof obj.fav==="object"  ? obj.fav  : {};
+    tone = obj.tone || "soft";
+    syn  = obj.syn  && typeof obj.syn==="object"  ? obj.syn  : defaultSyn;
+    zones = Array.isArray(obj.zones) ? obj.zones : [DEFAULT_ZONE];
+    cats  = Array.isArray(obj.cats)  ? obj.cats  : [{zone:DEFAULT_ZONE,name:DEFAULT_CAT}];
+    viewMode = (obj.viewMode === "list" || obj.viewMode === "card") ? obj.viewMode : (localStorage.getItem(LS_VIEW) || "card");
+
+    items = items.map(it => {
+      if(!it.zone) it.zone = DEFAULT_ZONE;
+      if(!it.category) it.category = DEFAULT_CAT;
+      if(!it.keywords) it.keywords = [];
+      if(!it.replies && it.reply){
+        it.replies = {soft: it.reply, neutral: it.reply, firm: it.reply};
+        delete it.reply;
+      }
+      if(!it.replies) it.replies = {soft:"", neutral:"", firm:""};
+      return it;
+    });
+    if(!zones.includes(DEFAULT_ZONE)) zones.unshift(DEFAULT_ZONE);
+    for(const z of zones){
+      if(!cats.some(x => x.zone===z && x.name===DEFAULT_CAT)) cats.push({zone:z,name:DEFAULT_CAT});
+    }
+
+    saveJSON(LS_ITEMS, items);
+    saveJSON(LS_USED, used);
+    saveJSON(LS_FAV, fav);
+    localStorage.setItem(LS_TONE, tone);
+    saveJSON(LS_SYN, syn);
+    saveJSON(LS_ZONES, zones);
+    saveJSON(LS_CATS, cats);
+    localStorage.setItem(LS_VIEW, viewMode);
+
+    refreshAllSelectors(false);
+    setTone(tone);
+    setView(viewMode);
+    renderZoneManager();
+    renderCatManager();
+    renderSynEditor();
+    render();
+    toast("已匯入");
+  } catch {
+    toast("匯入失敗");
+  } finally {
+    e.target.value = "";
+  }
+});
+
+/** Syn editor */
+function renderSynEditor(){ synEditor.value = JSON.stringify(syn, null, 2); }
+document.getElementById("synSave").addEventListener("click", () => {
+  try{
+    const obj = JSON.parse(synEditor.value);
+    if(!obj || typeof obj!=="object") throw new Error("bad");
+    syn = obj;
+    saveJSON(LS_SYN, syn);
+    toast("已儲存字典");
+    render();
+  }catch{
+    toast("字典格式錯誤");
+  }
+});
+document.getElementById("synReset").addEventListener("click", () => {
+  syn = structuredClone(defaultSyn);
+  saveJSON(LS_SYN, syn);
+  renderSynEditor();
+  toast("已重置");
+  render();
+});
+
+/** PWA install hint */
+document.getElementById("installHint").addEventListener("click", () => {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isIOS) alert("iPhone/iPad：請用 Safari 開啟本頁 → 點「分享」→ 選「加入主畫面」。");
+  else alert("Android/Chrome：網址列右側通常會有「安裝應用程式」或「加入主畫面」。\n（若沒有，請用 https 或 localhost 開啟）");
+});
+
+/** ========== start ========== */
+ensureDefaults();
+refreshAllSelectors(true);
+renderZoneManager();
+renderCatManager();
+renderSynEditor();
+setTone(tone);
+setView(viewMode);
+render();
+</script>
+</body>
+</html>
