@@ -3,47 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STARS 雲端素材庫</title>
+    <title>STARS 雲端素材庫 Pro</title>
     <style>
-        /* UI 設定 - 保持簡潔美觀 */
-        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f3f4f6; --white: #ffffff; --tag-bg: #e1ecf4; --tag-text: #2c5282; --border-radius: 12px; }
+        /* --- 基礎設定 --- */
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f3f4f6; --white: #ffffff; --tag-bg: #e1ecf4; --tag-text: #2c5282; --border-radius: 12px; --text-sub: #888; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
-        
-        aside { width: 260px; background-color: var(--white); border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 20; }
+        * { box-sizing: border-box; }
+
+        /* --- 側邊欄 --- */
+        aside { width: 280px; background-color: var(--white); border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 20; }
         .brand { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .cat-list { flex: 1; overflow-y: auto; }
-        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; border-radius: 8px; color: #555; transition: 0.2s; margin-bottom: 5px; font-size: 15px; }
-        .cat-item:hover { background-color: #f8f9fa; }
-        .cat-item.active { background-color: var(--primary); color: white; }
-        .btn-add-cat { margin-top: 10px; width: 100%; padding: 10px; border: 2px dashed #ddd; background: none; color: #888; border-radius: 8px; cursor: pointer; }
-        .status-bar { font-size: 12px; color: #888; margin-top: 10px; text-align: center; }
+        
+        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; border-radius: 8px; color: #555; transition: 0.2s; margin-bottom: 5px; font-size: 15px; border: 1px solid transparent; }
+        .cat-item:hover { background-color: #f8f9fa; border-color: #eee; }
+        .cat-item.active { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .cat-item .cat-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
+        
+        /* 新增：Badge 樣式 */
+        .cat-badge { font-size: 12px; background: #eee; color: #666; padding: 2px 8px; border-radius: 10px; font-weight: 500; transition: 0.2s; min-width: 24px; text-align: center; }
+        .cat-item.active .cat-badge { background: rgba(255,255,255,0.2); color: white; }
+        
+        .cat-delete { opacity: 0; font-size: 14px; padding: 2px 6px; color: #999; margin-left: 5px; }
+        .cat-item:hover .cat-delete { opacity: 1; }
+        .cat-item.active .cat-delete { color: rgba(255,255,255,0.7); }
+        .cat-item.active .cat-delete:hover { color: white; }
 
+        .btn-add-cat { margin-top: 10px; width: 100%; padding: 10px; border: 2px dashed #ddd; background: none; color: #888; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-add-cat:hover { border-color: var(--accent); color: var(--accent); background: #fff5eb; }
+        .status-bar { font-size: 12px; color: #ccc; margin-top: 15px; text-align: center; }
+
+        /* --- 主內容區 --- */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        header { padding: 15px 30px; background: var(--white); border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-        .search-box { position: relative; flex: 1; max-width: 400px; }
-        .search-box input { width: 100%; padding: 10px 15px 10px 35px; border: 1px solid #ddd; border-radius: 20px; outline: none; background: #f9f9f9; }
+        
+        header { padding: 15px 30px; background: var(--white); border-bottom: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; gap: 20px; width: 100%; }
+        
+        /* 新增：Header 狀態列 */
+        .header-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: #666; }
+        .info-tag { background: #f0f2f5; padding: 4px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
+        .info-highlight { color: var(--accent); font-weight: bold; }
+
+        .search-wrapper { position: relative; flex: 1; max-width: 400px; }
+        .search-wrapper input { width: 100%; padding: 10px 35px 10px 35px; border: 1px solid #ddd; border-radius: 20px; outline: none; background: #f9f9f9; transition: 0.2s; }
+        .search-wrapper input:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1); }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; }
-        .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); white-space: nowrap; }
         
-        .content-area { flex: 1; padding: 30px; overflow-y: auto; background-color: var(--bg); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding-bottom: 50px; }
+        /* 新增：清除按鈕 */
+        .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; padding: 5px; display: none; border-radius: 50%; font-size: 14px; }
+        .search-clear:hover { background: #eee; color: #666; }
+        .search-wrapper input:not(:placeholder-shown) + .search-clear { display: block; } /* 有字時才顯示 X (JS輔助) */
+
+        .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(230, 126, 34, 0.4); }
         
-        .card { background: var(--white); border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid transparent; transition: transform 0.2s; position: relative; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .card-img { width: 100%; height: 140px; background-color: #f0f0f0; object-fit: cover; border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius); display: none; }
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; background-color: var(--bg); position: relative; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 50px; }
+        
+        /* --- 卡片設計 --- */
+        .card { background: var(--white); border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid transparent; transition: all 0.2s; position: relative; overflow: hidden; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #eee; }
+        .card-img { width: 100%; height: 140px; background-color: #f0f0f0; object-fit: cover; border-bottom: 1px solid #f0f0f0; display: none; }
         .card-img.show { display: block; }
-        .card-body { padding: 15px 20px 20px; flex: 1; display: flex; flex-direction: column; }
-        .card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
-        .card-title { font-weight: bold; font-size: 17px; color: #2c3e50; flex: 1; }
+        .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
+        .card-title { font-weight: bold; font-size: 16px; color: #2c3e50; line-height: 1.4; }
+        
         .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
         .tag { font-size: 11px; background-color: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; font-weight: 500; }
-        .card-actions { display: flex; gap: 2px; }
-        .icon-btn { background: none; border: none; cursor: pointer; font-size: 15px; color: #bbb; padding: 4px; border-radius: 4px; }
+        
+        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; line-height: 1.4; }
+        
+        .card-text { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; margin-bottom: 12px; max-height: 200px; overflow-y: auto; border: 1px solid #eee; }
+        
+        .card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* 新增：時間戳記 */
+        .card-time { font-size: 11px; color: #aaa; text-align: right; }
+        
+        .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-copy:hover { background-color: #34495e; }
+        .btn-copy.copied { background-color: #27ae60; }
+
+        .card-actions { display: flex; gap: 2px; flex-shrink: 0; }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #ccc; padding: 4px; border-radius: 4px; transition: 0.2s; }
         .icon-btn:hover { background-color: #f5f5f5; color: var(--primary); }
-        .icon-btn.delete:hover { color: #e74c3c; }
-        .card-text { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.5; color: #444; white-space: pre-wrap; margin-bottom: 12px; max-height: 200px; overflow-y: auto; border: 1px solid #f0f0f0; }
-        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; }
-        .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; }
+        .icon-btn.delete:hover { color: #e74c3c; background-color: #fce8e6; }
+
+        /* --- 空狀態設計 (New) --- */
+        .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: #888; text-align: center; border: 2px dashed #e0e0e0; border-radius: 16px; margin-top: 20px; background: white; }
+        .empty-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+        .empty-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #555; }
+        .empty-desc { font-size: 14px; margin-bottom: 25px; max-width: 400px; line-height: 1.5; }
         
         /* Modal & Toast */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.2s; backdrop-filter: blur(2px); }
@@ -51,26 +103,26 @@
         .modal { background: white; width: 500px; max-width: 90%; border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 2000; }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 2000; font-size: 14px; }
         #toast.show { opacity: 1; bottom: 50px; }
         
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: auto; }
             aside { width: 100%; border-right: none; border-bottom: 1px solid #ddd; padding: 10px; height: auto; }
-            .cat-list { display: flex; overflow-x: auto; padding-bottom: 5px; }
-            .cat-item { white-space: nowrap; margin-right: 10px; background: #f0f0f0; padding: 8px 15px; }
-            .cat-item.active { background: var(--primary); }
+            .cat-list { display: flex; overflow-x: auto; padding-bottom: 5px; gap: 8px; }
+            .cat-item { margin: 0; padding: 8px 12px; background: #f5f5f5; border: 1px solid #eee; }
             .brand, .btn-add-cat, .status-bar { display: none; }
+            .header-top { flex-wrap: wrap; gap: 15px; }
+            .search-wrapper { order: 2; min-width: 100%; }
             .content-area { padding: 15px; }
-            header { padding: 10px; flex-wrap: wrap; }
-            .search-box { order: 2; min-width: 100%; margin-top: 10px; }
+            .header-info { display: none; } /* 手機版隱藏詳細狀態以省空間 */
         }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="brand">☁️ STARS 素材庫</div>
+    <div class="brand">✨ STARS 素材庫</div>
     <div class="cat-list" id="category-container"></div>
     <button class="btn-add-cat" onclick="addNewCategory()">+ 新增分類</button>
     <div class="status-bar" id="connection-status">連線中...</div>
@@ -78,11 +130,19 @@
 
 <main>
     <header>
-        <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="搜尋標題、#標籤 或內容...">
+        <div class="header-top">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="搜尋標題、#標籤 或內容...">
+                <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
+            </div>
+            <button class="btn-primary" onclick="openModal()">
+                <span>＋</span> 新增素材
+            </button>
         </div>
-        <button class="btn-primary" onclick="openModal()">+ 新增素材</button>
+        
+        <div class="header-info" id="header-status">
+            </div>
     </header>
 
     <div class="content-area">
@@ -95,21 +155,28 @@
     <div class="modal">
         <h2 id="modal-title" style="margin:0;">新增素材</h2>
         <input type="hidden" id="edit-id">
+        
+        <div style="font-size: 14px; font-weight: bold; color: #555; margin-bottom: -10px;">基本資訊</div>
         <select id="input-category" class="form-control"></select>
-        <input type="text" id="input-title" class="form-control" placeholder="標題">
-        <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
-        <div style="font-size:12px; color:#666;">圖片 (自動壓縮)：</div>
+        <input type="text" id="input-title" class="form-control" placeholder="標題 (必填)">
+        <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷, 3月)">
+        
+        <div style="font-size: 14px; font-weight: bold; color: #555; margin-bottom: -10px; margin-top: 5px;">內容與備註</div>
+        <textarea id="input-content" class="form-control" style="height:120px" placeholder="在此輸入要回覆的訊息內容..."></textarea>
+        <input type="text" id="input-note" class="form-control" placeholder="內部備註 (僅自己可見)">
+        
+        <div style="font-size: 14px; font-weight: bold; color: #555; margin-bottom: -10px; margin-top: 5px;">圖片 (選填)</div>
         <input type="file" id="input-image" class="form-control" accept="image/*">
-        <div id="compress-msg" style="display:none; color:green; font-size:12px;">✅ 圖片已處理</div>
+        <div id="compress-msg" style="display:none; color:green; font-size:12px; margin-top:-10px;">✅ 圖片已自動壓縮</div>
         <input type="hidden" id="image-base64">
-        <textarea id="input-content" class="form-control" style="height:100px" placeholder="回覆內容"></textarea>
-        <input type="text" id="input-note" class="form-control" placeholder="內部備註">
+        
         <div class="modal-footer">
-            <button onclick="closeModal()" style="padding:10px 20px; border:none; border-radius:20px; cursor:pointer;">取消</button>
-            <button class="btn-primary" onclick="saveItem()">儲存到雲端</button>
+            <button onclick="closeModal()" style="padding:10px 20px; border:none; background:#f0f0f0; border-radius:20px; cursor:pointer;">取消</button>
+            <button class="btn-primary" onclick="saveItem()">儲存</button>
         </div>
     </div>
 </div>
+
 <div id="toast">已複製！</div>
 
 <script type="module">
@@ -118,16 +185,16 @@
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
     // -----------------------------------------------------------
-    // 你的 Firebase Config (已幫你填好)
+    // ⚠️ 請在這裡貼上你從 Firebase 複製的 Config
     // -----------------------------------------------------------
     const firebaseConfig = {
-        apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
-        authDomain: "reply-library-pro.firebaseapp.com",
-        projectId: "reply-library-pro",
-        storageBucket: "reply-library-pro.firebasestorage.app",
-        messagingSenderId: "1008012662526",
-        appId: "1:1008012662526:web:947db988fefe43e3cef7af",
-        measurementId: "G-6G30XHB8Y1"
+        apiKey: "請替換你的_apiKey",
+        authDomain: "請替換你的_authDomain",
+        projectId: "請替換你的_projectId",
+        storageBucket: "請替換你的_storageBucket",
+        messagingSenderId: "請替換你的_messagingSenderId",
+        appId: "請替換你的_appId",
+        measurementId: "請替換你的_measurementId"
     };
 
     // Initialize Firebase
@@ -139,34 +206,46 @@
     const categoryDocId = "settings_categories";
 
     let items = [];
-    let categories = ['常用問候', '產品介紹', '異議處理']; 
+    let categories = ['常用問候', '產品介紹', '異議處理'];
     let currentCat = 'All';
+    let catCounts = {}; // 用來存每個分類的數量
 
     // 監聽資料
     const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('connection-status').innerText = '🟢 已連線同步';
+        document.getElementById('connection-status').innerText = '🟢 雲端已同步';
         
         const tempItems = [];
         let hasCategoryDoc = false;
 
+        // 重置計數
+        catCounts = { 'All': 0 };
+        categories.forEach(c => catCounts[c] = 0);
+
         snapshot.forEach((doc) => {
             if(doc.id === categoryDocId) {
-                // 收到分類設定檔
                 categories = doc.data().list || categories;
                 hasCategoryDoc = true;
-                renderCategories();
+                // 確保新分類也在計數器中
+                categories.forEach(c => { if(catCounts[c] === undefined) catCounts[c] = 0; });
             } else {
-                // 收到一般內容
-                tempItems.push({ id: doc.id, ...doc.data() });
+                const data = doc.data();
+                tempItems.push({ id: doc.id, ...data });
+                
+                // 計算數量
+                catCounts['All']++;
+                if(data.category && catCounts[data.category] !== undefined) {
+                    catCounts[data.category]++;
+                }
             }
         });
+        
         items = tempItems;
+        renderCategories(); // 重新渲染分類以更新 Badge
         renderGrid();
         
-        // 如果雲端完全沒資料，就建立預設分類
         if(!hasCategoryDoc && items.length === 0) {
            confirmSetCategory(categories);
         }
@@ -174,63 +253,144 @@
     }, (error) => {
         console.error("Error:", error);
         document.getElementById('connection-status').innerText = '🔴 連線失敗';
-        if(error.code === 'permission-denied') {
-            document.getElementById('loading').innerText = '錯誤：權限不足。請檢查 Firebase Console 的 Database Rules 是否已設為 Test Mode。';
-        } else {
-            document.getElementById('loading').innerText = '連線錯誤：' + error.message;
-        }
     });
 
-    // 渲染 UI
+    // 渲染分類 (含 Badge)
     function renderCategories() {
         const container = document.getElementById('category-container');
-        let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')">📂 全部</div>`;
+        
+        // 全部
+        let html = `
+            <div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')">
+                <span class="cat-name">📂 全部</span>
+                <span class="cat-badge">${catCounts['All'] || 0}</span>
+            </div>`;
+        
+        // 各分類
         categories.forEach(cat => {
-            html += `<div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')">${cat} 
-                     <span style="font-size:10px; margin-left:5px; opacity:0.5;" onclick="window.deleteCategory('${cat}', event)">✕</span></div>`;
+            const count = catCounts[cat] || 0;
+            html += `
+                <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')">
+                    <span class="cat-name">${cat}</span>
+                    <span class="cat-badge">${count}</span>
+                    <span class="cat-delete" onclick="window.deleteCategory('${cat}', event)" title="刪除分類">✕</span>
+                </div>`;
         });
         container.innerHTML = html;
+        
+        // 更新 Modal 下拉選單
         const select = document.getElementById('input-category');
         select.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
+    // 渲染 Grid
     function renderGrid() {
         const container = document.getElementById('grid-container');
-        const search = document.getElementById('search-input').value.toLowerCase();
+        const searchInput = document.getElementById('search-input');
+        const searchValue = searchInput.value.toLowerCase();
+        
+        // 控制清除按鈕顯示
+        const clearBtn = document.getElementById('search-clear');
+        clearBtn.style.display = searchValue.length > 0 ? 'block' : 'none';
+
         const filtered = items.filter(item => {
             const matchCat = currentCat === 'All' || item.category === currentCat;
             const tagsStr = (item.tags || []).join(' ').toLowerCase();
-            const matchSearch = item.title.toLowerCase().includes(search) || item.content.toLowerCase().includes(search) || tagsStr.includes(search);
+            const matchSearch = item.title.toLowerCase().includes(searchValue) || 
+                                item.content.toLowerCase().includes(searchValue) || 
+                                tagsStr.includes(searchValue);
             return matchCat && matchSearch;
         });
 
+        // 更新 Header 狀態
+        updateHeaderStatus(filtered.length, searchValue);
+
+        // 空狀態處理
         if(filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#ccc; width:100%; margin-top:50px;">暫無資料</div>`;
+            let emptyHtml = '';
+            if(searchValue) {
+                // 搜尋無結果
+                emptyHtml = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">找不到符合「${searchInput.value}」的內容</div>
+                        <div class="empty-desc">試著換個關鍵字，或是切換分類找找看？</div>
+                        <button class="btn-primary" onclick="window.clearSearch()">清除搜尋</button>
+                    </div>`;
+            } else {
+                // 分類無資料
+                emptyHtml = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div class="empty-title">這個分類還沒有素材</div>
+                        <div class="empty-desc">建立第一筆回覆素材，讓團隊運作更有效率！</div>
+                        <button class="btn-primary" onclick="window.openModal()">＋ 立即新增</button>
+                    </div>`;
+            }
+            container.innerHTML = emptyHtml;
             return;
         }
 
-        container.innerHTML = filtered.map(item => `
+        container.innerHTML = filtered.map(item => {
+            // 時間格式化
+            let dateStr = '';
+            if(item.createdAt && item.createdAt.toDate) {
+                const d = item.createdAt.toDate();
+                dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            }
+
+            return `
             <div class="card">
                 <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}">
                 <div class="card-body">
                     <div class="card-header">
                         <div class="card-title">${item.title}</div>
                         <div class="card-actions">
-                            <button class="icon-btn" onclick="window.editItem('${item.id}')">✏️</button>
-                            <button class="icon-btn delete" onclick="window.deleteItem('${item.id}')">🗑️</button>
+                            <button class="icon-btn" onclick="window.editItem('${item.id}')" title="編輯">✏️</button>
+                            <button class="icon-btn delete" onclick="window.deleteItem('${item.id}')" title="刪除">🗑️</button>
                         </div>
                     </div>
+                    
                     <div class="card-tags">${(item.tags || []).map(t => `<span class="tag">#${t}</span>`).join('')}</div>
-                    ${item.note ? `<div class="card-note">💡 ${item.note}</div>` : ''}
+                    
+                    ${item.note ? `<div class="card-note"><span>💡</span>${item.note}</div>` : ''}
+                    
                     <div class="card-text">${item.content}</div>
-                    <button class="btn-copy" onclick="window.copyText(this)"><span>📋 複製</span><span style="display:none;">${item.content}</span></button>
+                    
+                    <div class="card-footer">
+                        ${dateStr ? `<div class="card-time">🕒 ${dateStr}</div>` : ''}
+                        <button class="btn-copy" onclick="window.copyText(this)">
+                            <span>📋 複製內容</span>
+                            <span style="display:none;">${item.content}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
+    }
+
+    // 更新 Header 狀態文字
+    function updateHeaderStatus(showCount, searchKeyword) {
+        const statusDiv = document.getElementById('header-status');
+        let html = `
+            <div class="info-tag">目前分類：<span class="info-highlight">${currentCat}</span></div>
+            <div class="info-tag">顯示數量：<span class="info-highlight">${showCount}</span> / ${catCounts[currentCat] || catCounts['All'] || 0}</div>
+        `;
+        
+        if(searchKeyword) {
+            html += `<div class="info-tag">搜尋中：<span class="info-highlight">${searchKeyword}</span></div>`;
+        }
+        
+        statusDiv.innerHTML = html;
     }
 
     // 功能邏輯
     window.filterCat = (cat) => { currentCat = cat; renderCategories(); renderGrid(); };
+    window.clearSearch = () => {
+        document.getElementById('search-input').value = '';
+        renderGrid();
+    };
+
     window.saveItem = async () => {
         const id = document.getElementById('edit-id').value;
         const data = {
@@ -243,11 +403,19 @@
             createdAt: serverTimestamp()
         };
         if(!data.title || !data.content) return alert('請填寫標題和內容');
-        document.getElementById('modal-title').innerText = '儲存中...';
+        
+        const btn = document.querySelector('.modal-footer .btn-primary');
+        const originText = btn.innerText;
+        btn.innerText = '儲存中...';
+        btn.disabled = true;
+
         try {
             id ? await updateDoc(doc(db, collectionName, id), data) : await addDoc(collection(db, collectionName), data);
             closeModal();
         } catch(e) { alert('儲存失敗：' + e.message); }
+        
+        btn.innerText = originText;
+        btn.disabled = false;
     };
 
     window.deleteItem = async (id) => { if(confirm('確定刪除？')) await deleteDoc(doc(db, collectionName, id)); };
@@ -266,19 +434,21 @@
     };
 
     window.addNewCategory = async () => {
-        const name = prompt("新分類名稱：");
+        const name = prompt("請輸入新分類名稱：");
         if(name && !categories.includes(name)) await confirmSetCategory([...categories, name]);
     };
     
     window.deleteCategory = async (cat, e) => {
         e.stopPropagation();
-        if(confirm(`刪除分類 ${cat}?`)) {
+        if(confirm(`確定要刪除「${cat}」分類嗎？(該分類下的素材不會消失，只是需要重新歸類)`)) {
             await confirmSetCategory(categories.filter(c => c !== cat));
-            if(currentCat === cat) currentCat = 'All';
+            if(currentCat === cat) {
+                currentCat = 'All';
+                renderGrid();
+            }
         }
     };
 
-    // 關鍵修正：加入 serverTimestamp() 以確保分類檔案能在 orderBy 查詢中出現
     async function confirmSetCategory(list) {
         await setDoc(doc(db, collectionName, categoryDocId), { 
             list: list,
@@ -286,7 +456,7 @@
         }, { merge: true });
     }
 
-    // UI Helper
+    // UI Helpers
     window.openModal = () => {
         document.getElementById('edit-id').value = '';
         document.getElementById('input-title').value = '';
@@ -294,21 +464,41 @@
         document.getElementById('input-note').value = '';
         document.getElementById('input-tags').value = '';
         document.getElementById('image-base64').value = '';
+        document.getElementById('input-image').value = '';
+        document.getElementById('compress-msg').style.display = 'none';
+        
+        // 如果目前在某個分類，新增時預設選中該分類
+        if(currentCat !== 'All') document.getElementById('input-category').value = currentCat;
+        
         document.getElementById('modal-title').innerText = '新增素材';
         document.getElementById('modal').classList.add('open');
     };
     window.closeModal = () => document.getElementById('modal').classList.remove('open');
     document.getElementById('search-input').addEventListener('input', renderGrid);
+    
+    // 複製功能優化
     window.copyText = (btn) => {
         const text = btn.querySelector('span:nth-child(2)').innerText;
         navigator.clipboard.writeText(text).then(() => {
             const toast = document.getElementById('toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
+            
+            // 按鈕視覺回饋
+            const labelSpan = btn.querySelector('span:first-child');
+            const originalText = labelSpan.innerText;
+            
+            btn.classList.add('copied');
+            labelSpan.innerText = '✅ 已複製';
+            
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                labelSpan.innerText = originalText;
+            }, 1200);
         });
     };
 
-    // 圖片處理
+    // 圖片壓縮
     document.getElementById('input-image').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(!file) return;
