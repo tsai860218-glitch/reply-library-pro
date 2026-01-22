@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <meta name="robots" content="noindex, nofollow">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    
     <title>STARS 素材庫 (Team)</title>
     <style>
-        /* --- 基礎變數 --- */
+        /* --- 基礎變數與樣式 --- */
         :root {
             --primary: #2c3e50;
             --accent: #e67e22;
@@ -23,19 +26,124 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* 全螢幕登入鎖定 */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s ease; }
-        .login-card { background: #2d2d2d; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center; border: 1px solid #444; }
+        /* =========================================
+           🔐 1. 全螢幕登入鎖定層
+           ========================================= */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #1a1a1a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-card {
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
         .login-title { color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
         .login-subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
         .lock-icon { font-size: 40px; margin-bottom: 20px; display: inline-block; }
-        .big-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #555; background: #333; color: white; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
+
+        .big-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
         .big-input:focus { border-color: var(--accent); background: #444; }
-        .big-login-btn { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+
+        .big-login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
         .big-login-btn:hover { background: #219150; transform: translateY(-2px); }
 
-        /* 主介面 */
-        #app-interface { display: flex; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        /* =========================================
+           🖼️ 圖片檢視器 (Image Viewer) - 新增功能
+           ========================================= */
+        #image-viewer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        #image-viewer-overlay.open { opacity: 1; pointer-events: auto; }
+        
+        #full-image {
+            max-width: 95%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        
+        .viewer-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .viewer-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .viewer-btn:hover { background: rgba(255,255,255,0.3); }
+        .viewer-btn.download { background: var(--accent); border-color: var(--accent); }
+
+        /* =========================================
+           📱 2. 主應用程式介面
+           ========================================= */
+        #app-interface {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 手機版 Header */
         .mobile-header { display: none; padding: 15px; background: white; border-bottom: 1px solid #eee; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; }
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px; color: var(--primary); }
         .mobile-title { font-weight: bold; font-size: 18px; color: var(--primary); }
@@ -46,6 +154,7 @@
         aside { width: var(--sidebar-width); background-color: var(--white); border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 100; transition: transform 0.3s ease; }
         .brand { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .cat-list { flex: 1; overflow-y: auto; }
+        
         .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; border-radius: 8px; color: #555; margin-bottom: 5px; transition: 0.2s; }
         .cat-item:hover { background-color: #f8f9fa; }
         .cat-item.active { background-color: var(--primary); color: white; }
@@ -54,6 +163,7 @@
         .cat-delete { opacity: 0; margin-left: 5px; color: #999; cursor: pointer; }
         .cat-item:hover .cat-delete { opacity: 1; }
         
+        /* 側邊欄底部使用者區塊 */
         .user-panel { margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; text-transform: uppercase; }
         .user-details { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; gap: 4px; }
@@ -77,39 +187,16 @@
         .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); }
         .content-area { flex: 1; padding: 30px; overflow-y: auto; background-color: var(--bg); }
 
-        /* =========================================
-           👀 視圖切換器 (View Toggler)
-           ========================================= */
-        .view-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 14px;
-            color: #666;
-        }
-        .view-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 6px;
-            color: #999;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.2s;
-        }
+        /* 視圖切換器 */
+        .view-controls { display: flex; align-items: center; gap: 15px; font-size: 14px; color: #666; }
+        .view-btn { background: none; border: none; cursor: pointer; padding: 5px 10px; border-radius: 6px; color: #999; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .view-btn:hover { background: #f0f0f0; color: #666; }
         .view-btn.active { background: #e6f0fa; color: var(--primary); }
         
-        /* 網格佈局 (Grid View) - 預設 */
         .grid-view-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 50px; }
-        
-        /* 列表佈局 (List View) - 新增 */
         .list-view-container { display: flex; flex-direction: column; gap: 10px; padding-bottom: 50px; }
 
-        /* --- 卡片設計 (小圖/Grid 模式) --- */
+        /* 卡片設計 */
         .card { background: var(--white); border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid transparent; transition: all 0.2s; position: relative; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
         .card.pinned { border: 2px solid var(--accent); background: #fffcf8; }
@@ -121,28 +208,18 @@
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
         .card-title { font-weight: bold; font-size: 16px; color: #2c3e50; line-height: 1.4; flex: 1; }
         
-        /* --- 列表項目設計 (列表/List 模式) --- */
-        .list-item { 
-            background: white; 
-            border-radius: 8px; 
-            padding: 12px 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-            border: 1px solid #eee;
-            transition: 0.2s;
-        }
+        /* 列表項目設計 */
+        .list-item { background: white; border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #eee; transition: 0.2s; }
         .list-item:hover { border-color: var(--accent); transform: translateX(2px); }
         .list-item.pinned { border-left: 4px solid var(--accent); background: #fffcf8; }
-        
         .list-content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .list-header { display: flex; align-items: center; gap: 10px; }
         .list-title { font-weight: bold; font-size: 15px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .list-preview { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-img-icon { font-size: 14px; color: #888; display: none; }
+        .list-img-icon { font-size: 14px; color: #888; display: none; cursor: pointer; }
         .list-img-icon.has-img { display: inline-block; }
-        
+        .list-img-icon:hover { transform: scale(1.2); }
+
         /* 通用元件 */
         .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
         .tag { font-size: 11px; background-color: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; }
@@ -160,7 +237,7 @@
         .card-time { font-size: 11px; color: #aaa; text-align: right; }
         
         .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-copy.list-mode { width: auto; padding: 6px 12px; font-size: 13px; } /* 列表模式按鈕較小 */
+        .btn-copy.list-mode { width: auto; padding: 6px 12px; font-size: 13px; }
         .btn-copy.copied { background-color: #27ae60; }
 
         .card-actions { display: flex; gap: 2px; flex-shrink: 0; }
@@ -180,6 +257,7 @@
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
         .modal-label { font-size: 14px; font-weight: bold; color: #555; margin-bottom: -8px; margin-top: 5px; }
 
+        /* 強制高度 */
         textarea#input-question { height: 300px !important; min-height: 300px !important; background: #f9f9f9; resize: vertical; }
         textarea#input-content { height: 300px !important; min-height: 300px !important; resize: vertical; }
 
@@ -198,7 +276,6 @@
             .search-wrapper { order: 2; min-width: 100%; }
             .btn-primary { order: 1; margin-left: auto; }
             .content-area { padding: 15px; }
-            /* 手機版隱藏切換文字，只留圖示 */
             .view-controls span { display: none; }
         }
     </style>
@@ -217,8 +294,15 @@
     </div>
 </div>
 
+<div id="image-viewer-overlay" onclick="closeImageViewer()">
+    <img id="full-image" src="" onclick="event.stopPropagation()">
+    <div class="viewer-controls" onclick="event.stopPropagation()">
+        <button class="viewer-btn download" onclick="downloadCurrentImage()">⬇️ 下載圖片</button>
+        <button class="viewer-btn" onclick="closeImageViewer()">✕ 關閉</button>
+    </div>
+</div>
+
 <div id="app-interface">
-    
     <div class="mobile-header">
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <div class="mobile-title">STARS 素材庫</div>
@@ -259,7 +343,7 @@
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                 <div class="view-controls">
-                    呈現：
+                    <span>呈現：</span>
                     <button class="view-btn" id="btn-list" onclick="switchView('list')">☰ 列表</button>
                     <button class="view-btn active" id="btn-grid" onclick="switchView('grid')">⊞ 小圖</button>
                 </div>
@@ -283,14 +367,14 @@
         <input type="text" id="input-title" class="form-control" placeholder="標題">
         <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
         
-        <div class="modal-label">對方問題 / 情境描述 </div>
-        <textarea id="input-question" class="form-control" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
+        <div class="modal-label">對方問題 / 情境描述 (可被複製)</div>
+        <textarea id="input-question" class="form-control" placeholder="紀錄對方的問題原委..."></textarea>
 
         <div class="modal-label">回覆內容</div>
         <textarea id="input-content" class="form-control" placeholder="輸入建議回覆的話術..."></textarea>
         
         <div class="modal-label">備註</div>
-        <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
+        <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒">
         
         <div class="modal-label">上傳佐證圖片 (對話截圖)</div>
         <input type="file" id="input-image" class="form-control" accept="image/*">
@@ -316,7 +400,6 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-    // 1. Config
     const firebaseConfig = {
         apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
         authDomain: "reply-library-pro.firebaseapp.com",
@@ -327,7 +410,6 @@
         measurementId: "G-6G30XHB8Y1"
     };
 
-    // 2. Admin List
     const ADMIN_EMAILS = ["leader@stars.com"]; 
 
     const app = initializeApp(firebaseConfig);
@@ -343,9 +425,8 @@
     let catCounts = {};
     let currentUser = null;
     let isAdmin = false;
-    let currentView = localStorage.getItem('stars_view_mode') || 'grid'; // 預設讀取
+    let currentView = localStorage.getItem('stars_view_mode') || 'grid';
 
-    // --- 權限與登入 ---
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
         const loginOverlay = document.getElementById('login-overlay');
@@ -358,8 +439,6 @@
             appInterface.style.pointerEvents = 'auto';
             isAdmin = ADMIN_EMAILS.includes(user.email);
             updateUserUI();
-            
-            // 初始化視圖按鈕
             switchView(currentView);
             startDataListener();
         } else {
@@ -378,16 +457,11 @@
         if(!email || !pass) { msg.innerText = "請輸入帳號和密碼"; return; }
         msg.innerText = "登入中...";
         signInWithEmailAndPassword(auth, email, pass)
-            .then(() => {
-                document.getElementById('login-password').value = '';
-                msg.innerText = "";
-            })
+            .then(() => { document.getElementById('login-password').value = ''; msg.innerText = ""; })
             .catch((error) => { msg.innerText = "登入失敗：帳號或密碼錯誤"; });
     };
     
-    window.logout = () => {
-        signOut(auth).then(() => { window.location.reload(); });
-    };
+    window.logout = () => { signOut(auth).then(() => { window.location.reload(); }); };
 
     function updateUserUI() {
         document.getElementById('user-name').innerText = currentUser.email;
@@ -401,27 +475,35 @@
         }
     }
 
-    // --- 視圖切換邏輯 (New) ---
+    // 視圖切換
     window.switchView = (mode) => {
         currentView = mode;
-        localStorage.setItem('stars_view_mode', mode); // 記憶設定
-        
-        // 更新按鈕樣式
+        localStorage.setItem('stars_view_mode', mode);
         document.getElementById('btn-list').classList.toggle('active', mode === 'list');
         document.getElementById('btn-grid').classList.toggle('active', mode === 'grid');
-        
-        // 更新容器 Class
         const container = document.getElementById('content-container');
-        if(mode === 'list') {
-            container.className = 'list-view-container';
-        } else {
-            container.className = 'grid-view-container';
-        }
-        
-        renderContent(); // 重新渲染內容
+        container.className = mode === 'list' ? 'list-view-container' : 'grid-view-container';
+        renderContent();
     };
 
-    // --- 資料邏輯 ---
+    // 圖片檢視
+    window.viewImage = (id) => {
+        const item = items.find(i => i.id === id);
+        if(item && item.image) {
+            document.getElementById('full-image').src = item.image;
+            document.getElementById('image-viewer-overlay').classList.add('open');
+        }
+    };
+    window.closeImageViewer = () => { document.getElementById('image-viewer-overlay').classList.remove('open'); };
+    window.downloadCurrentImage = () => {
+        const img = document.getElementById('full-image');
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'stars_image_' + new Date().getTime() + '.jpg';
+        link.click();
+    };
+
+    // 資料監聽
     function startDataListener() {
         const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
@@ -463,7 +545,6 @@
         document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
-    // --- 核心渲染 (支援列表/網格) ---
     function renderContent() {
         const container = document.getElementById('content-container');
         const searchValue = document.getElementById('search-input').value.toLowerCase();
@@ -485,31 +566,24 @@
 
         container.innerHTML = filtered.map(item => {
             if (currentView === 'list') {
-                // === 列表模式 HTML ===
                 return `
                 <div class="list-item ${item.isPinned ? 'pinned' : ''}">
                     ${item.isPinned ? '<span style="font-size:12px; margin-right:5px;">📌</span>' : ''}
-                    
                     <div class="list-content-wrapper">
                         <div class="list-header">
                             <div class="list-title">${item.title}</div>
-                            <span class="list-img-icon ${item.image ? 'has-img' : ''}" title="此素材包含圖片">🖼️</span>
+                            <span class="list-img-icon ${item.image ? 'has-img' : ''}" title="檢視圖片" onclick="window.viewImage('${item.id}')">🖼️</span>
                             ${(item.tags || []).slice(0, 2).map(t => `<span class="tag" onclick="window.filterTag('${t}')">#${t}</span>`).join('')}
                         </div>
                         <div class="list-preview">${item.content}</div>
                     </div>
-                    
                     <div class="card-actions">
-                        <button class="btn-copy list-mode" onclick="window.copyText(this)">
-                            <span>📋 複製</span>
-                            <span style="display:none;">${item.content}</span>
-                        </button>
+                        <button class="btn-copy list-mode" onclick="window.copyText(this)"><span>📋 複製</span><span style="display:none;">${item.content}</span></button>
                         <button class="icon-btn admin-only" onclick="window.editItem('${item.id}')">✏️</button>
                         <button class="icon-btn delete admin-only" onclick="window.deleteItem('${item.id}')">🗑️</button>
                     </div>
                 </div>`;
             } else {
-                // === 小圖(Grid)模式 HTML ===
                 let dateStr = '';
                 if(item.createdAt && item.createdAt.toDate) {
                     const d = item.createdAt.toDate();
@@ -517,7 +591,7 @@
                 }
                 return `
                 <div class="card ${item.isPinned ? 'pinned' : ''}">
-                    <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}" onclick="window.open('${item.image}', '_blank')">
+                    <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}" onclick="window.viewImage('${item.id}')">
                     <div class="card-body">
                         <div class="card-header">
                             <div class="card-title">${item.title}</div>
@@ -663,6 +737,3 @@
 </script>
 </body>
 </html>
-
-
-
