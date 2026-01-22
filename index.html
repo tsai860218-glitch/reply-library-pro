@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta name="robots" content="noindex, nofollow">
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
-    
     <title>STARS 素材庫 (Team)</title>
     <style>
-        /* --- 基礎變數與樣式 --- */
+        /* --- 基礎變數 --- */
         :root {
             --primary: #2c3e50;
             --accent: #e67e22;
@@ -26,77 +23,19 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* =========================================
-           🔐 1. 全螢幕登入鎖定層
-           ========================================= */
-        #login-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #1a1a1a;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.5s ease;
-        }
-
-        .login-card {
-            background: #2d2d2d;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid #444;
-        }
-
+        /* 全螢幕登入鎖定 */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s ease; }
+        .login-card { background: #2d2d2d; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center; border: 1px solid #444; }
         .login-title { color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
         .login-subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
         .lock-icon { font-size: 40px; margin-bottom: 20px; display: inline-block; }
-
-        .big-input {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-            background: #333;
-            color: white;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-        }
+        .big-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #555; background: #333; color: white; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
         .big-input:focus { border-color: var(--accent); background: #444; }
-
-        .big-login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .big-login-btn { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .big-login-btn:hover { background: #219150; transform: translateY(-2px); }
 
-        /* =========================================
-           📱 2. 主應用程式介面
-           ========================================= */
-        #app-interface {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
-        /* 手機版 Header */
+        /* 主介面 */
+        #app-interface { display: flex; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
         .mobile-header { display: none; padding: 15px; background: white; border-bottom: 1px solid #eee; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; }
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px; color: var(--primary); }
         .mobile-title { font-weight: bold; font-size: 18px; color: var(--primary); }
@@ -107,7 +46,6 @@
         aside { width: var(--sidebar-width); background-color: var(--white); border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 100; transition: transform 0.3s ease; }
         .brand { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .cat-list { flex: 1; overflow-y: auto; }
-        
         .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; cursor: pointer; border-radius: 8px; color: #555; margin-bottom: 5px; transition: 0.2s; }
         .cat-item:hover { background-color: #f8f9fa; }
         .cat-item.active { background-color: var(--primary); color: white; }
@@ -116,70 +54,14 @@
         .cat-delete { opacity: 0; margin-left: 5px; color: #999; cursor: pointer; }
         .cat-item:hover .cat-delete { opacity: 1; }
         
-        /* 側邊欄底部使用者區塊 */
-        .user-panel {
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            flex-shrink: 0;
-            text-transform: uppercase;
-        }
-        .user-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 0; 
-            gap: 4px;
-        }
-        #user-name {
-            font-size: 13px;
-            font-weight: bold;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .logout-btn {
-            font-size: 11px;
-            color: #666;
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            padding: 2px 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .user-panel { margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; text-transform: uppercase; }
+        .user-details { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; gap: 4px; }
+        #user-name { font-size: 13px; font-weight: bold; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-actions { display: flex; align-items: center; gap: 8px; }
+        .logout-btn { font-size: 11px; color: #666; background-color: #f0f0f0; border: 1px solid #ddd; padding: 2px 8px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .logout-btn:hover { background-color: #e0e0e0; color: #333; }
-        #admin-label {
-            font-size: 10px; 
-            background: #27ae60; 
-            color: white; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            display: none;
-        }
-
+        #admin-label { font-size: 10px; background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; display: none; }
         .btn-add-cat { margin-top: 10px; width: 100%; padding: 10px; border: 2px dashed #ddd; background: none; color: #888; border-radius: 8px; cursor: pointer; }
 
         /* 主內容區 */
@@ -194,76 +76,91 @@
         
         .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); }
         .content-area { flex: 1; padding: 30px; overflow-y: auto; background-color: var(--bg); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 50px; }
+
+        /* =========================================
+           👀 視圖切換器 (View Toggler)
+           ========================================= */
+        .view-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        .view-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            color: #999;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+        .view-btn:hover { background: #f0f0f0; color: #666; }
+        .view-btn.active { background: #e6f0fa; color: var(--primary); }
         
-        /* 卡片設計 */
+        /* 網格佈局 (Grid View) - 預設 */
+        .grid-view-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding-bottom: 50px; }
+        
+        /* 列表佈局 (List View) - 新增 */
+        .list-view-container { display: flex; flex-direction: column; gap: 10px; padding-bottom: 50px; }
+
+        /* --- 卡片設計 (小圖/Grid 模式) --- */
         .card { background: var(--white); border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid transparent; transition: all 0.2s; position: relative; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
         .card.pinned { border: 2px solid var(--accent); background: #fffcf8; }
         .card.pinned .pin-btn { color: var(--accent); opacity: 1; }
         
-        /* 圖片區域：點擊可放大 */
-        .card-img { 
-            width: 100%; 
-            height: 160px; 
-            background-color: #f0f0f0; 
-            object-fit: cover; 
-            border-bottom: 1px solid #eee; 
-            display: none; 
-            cursor: zoom-in;
-        }
+        .card-img { width: 100%; height: 160px; background-color: #f0f0f0; object-fit: cover; border-bottom: 1px solid #eee; display: none; cursor: zoom-in; }
         .card-img.show { display: block; }
-
         .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
         .card-title { font-weight: bold; font-size: 16px; color: #2c3e50; line-height: 1.4; flex: 1; }
         
+        /* --- 列表項目設計 (列表/List 模式) --- */
+        .list-item { 
+            background: white; 
+            border-radius: 8px; 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            border: 1px solid #eee;
+            transition: 0.2s;
+        }
+        .list-item:hover { border-color: var(--accent); transform: translateX(2px); }
+        .list-item.pinned { border-left: 4px solid var(--accent); background: #fffcf8; }
+        
+        .list-content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .list-header { display: flex; align-items: center; gap: 10px; }
+        .list-title { font-weight: bold; font-size: 15px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-preview { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-img-icon { font-size: 14px; color: #888; display: none; }
+        .list-img-icon.has-img { display: inline-block; }
+        
+        /* 通用元件 */
         .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
         .tag { font-size: 11px; background-color: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; }
         .tag:hover { background-color: #d0e1f0; }
-
-        /* 對方情境/問題區塊 */
-        .card-question {
-            background-color: var(--question-bg);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 3px solid #95a5a6;
-            position: relative;
-        }
-        .question-label {
-            font-size: 11px;
-            font-weight: bold;
-            color: #7f8c8d;
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .question-text {
-            font-size: 13px;
-            color: var(--question-text);
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-        .question-copy-btn {
-            font-size: 10px;
-            color: #3498db;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-        .question-copy-btn:hover { text-decoration: underline; }
-
-        /* 備註與內容 */
-        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; align-items: flex-start; }
+        
+        .card-question { background-color: var(--question-bg); padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #95a5a6; }
+        .question-label { font-size: 11px; font-weight: bold; color: #7f8c8d; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .question-text { font-size: 13px; color: var(--question-text); line-height: 1.5; white-space: pre-wrap; }
+        .question-copy-btn { font-size: 10px; color: #3498db; cursor: pointer; background: none; border: none; padding: 0; }
+        
+        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; }
         .card-text { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; margin-bottom: 12px; max-height: 250px; overflow-y: auto; border: 1px solid #eee; }
         
         .card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
         .card-time { font-size: 11px; color: #aaa; text-align: right; }
         
         .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-copy.list-mode { width: auto; padding: 6px 12px; font-size: 13px; } /* 列表模式按鈕較小 */
         .btn-copy.copied { background-color: #27ae60; }
 
         .card-actions { display: flex; gap: 2px; flex-shrink: 0; }
@@ -271,7 +168,6 @@
         .icon-btn:hover { background-color: #f5f5f5; color: var(--primary); }
         .pin-btn:hover { color: var(--accent); }
 
-        /* 權限控制 */
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: flex !important; }
         .is-admin span.admin-only { display: inline-block !important; }
@@ -280,30 +176,16 @@
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal { background: white; width: 500px; max-width: 90%; border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
         .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-        
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-        
-        /* Modal 標籤樣式 */
         .modal-label { font-size: 14px; font-weight: bold; color: #555; margin-bottom: -8px; margin-top: 5px; }
 
-        /* 🔴 強制高度修正區 */
-        textarea#input-question {
-            height: 160px !important;
-            min-height: 160px !important;
-            background: #f9f9f9;
-            resize: vertical;
-        }
-        textarea#input-content {
-            height: 350px !important;
-            min-height: 350px !important;
-            resize: vertical;
-        }
+        textarea#input-question { height: 160px !important; min-height: 160px !important; background: #f9f9f9; resize: vertical; }
+        textarea#input-content { height: 350px !important; min-height: 350px !important; resize: vertical; }
 
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; }
         #toast.show { opacity: 1; bottom: 50px; }
-        .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888; border: 2px dashed #e0e0e0; border-radius: 16px; margin-top: 20px; background: white; }
+        .empty-state { grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; border: 2px dashed #e0e0e0; border-radius: 16px; margin-top: 20px; background: white; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
@@ -316,6 +198,8 @@
             .search-wrapper { order: 2; min-width: 100%; }
             .btn-primary { order: 1; margin-left: auto; }
             .content-area { padding: 15px; }
+            /* 手機版隱藏切換文字，只留圖示 */
+            .view-controls span { display: none; }
         }
     </style>
 </head>
@@ -326,7 +210,6 @@
         <div class="lock-icon">🔐</div>
         <div class="login-title">STARS 素材庫</div>
         <div class="login-subtitle">請輸入帳號密碼以存取資料庫</div>
-        
         <input type="text" id="login-email" class="big-input" placeholder="帳號 (Email)">
         <input type="password" id="login-password" class="big-input" placeholder="密碼">
         <button class="big-login-btn" onclick="login()">登入系統</button>
@@ -358,7 +241,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="status-bar" id="connection-status" style="font-size:11px; color:#ccc; text-align:center; margin-top:5px;">連線中...</div>
     </aside>
 
@@ -374,11 +256,19 @@
                     <span>＋</span> 新增素材
                 </button>
             </div>
-            <div id="header-status" style="font-size:13px; color:#666; margin-top:5px;"></div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <div class="view-controls">
+                    呈現：
+                    <button class="view-btn" id="btn-list" onclick="switchView('list')">☰ 列表</button>
+                    <button class="view-btn active" id="btn-grid" onclick="switchView('grid')">⊞ 小圖</button>
+                </div>
+                <div id="header-status" style="font-size:13px; color:#666;"></div>
+            </div>
         </header>
 
         <div class="content-area">
-            <div class="grid" id="grid-container"></div>
+            <div id="content-container" class="grid-view-container"></div>
         </div>
     </main>
 </div>
@@ -394,10 +284,10 @@
         <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
         
         <div class="modal-label">對方問題 / 情境描述 (可被複製)</div>
-        <textarea id="input-question" class="form-control" rows="6" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
+        <textarea id="input-question" class="form-control" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
 
         <div class="modal-label">回覆內容</div>
-        <textarea id="input-content" class="form-control" rows="15" placeholder="輸入建議回覆的話術..."></textarea>
+        <textarea id="input-content" class="form-control" placeholder="輸入建議回覆的話術..."></textarea>
         
         <div class="modal-label">備註</div>
         <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
@@ -426,9 +316,7 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-    // -----------------------------------------------------------
-    // ⚠️ 1. Config
-    // -----------------------------------------------------------
+    // 1. Config
     const firebaseConfig = {
         apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
         authDomain: "reply-library-pro.firebaseapp.com",
@@ -439,9 +327,7 @@
         measurementId: "G-6G30XHB8Y1"
     };
 
-    // -----------------------------------------------------------
-    // ⚠️ 2. 管理員名單
-    // -----------------------------------------------------------
+    // 2. Admin List
     const ADMIN_EMAILS = ["leader@stars.com"]; 
 
     const app = initializeApp(firebaseConfig);
@@ -457,8 +343,9 @@
     let catCounts = {};
     let currentUser = null;
     let isAdmin = false;
+    let currentView = localStorage.getItem('stars_view_mode') || 'grid'; // 預設讀取
 
-    // --- 權限與登入邏輯 ---
+    // --- 權限與登入 ---
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
         const loginOverlay = document.getElementById('login-overlay');
@@ -467,17 +354,17 @@
         if (user) {
             loginOverlay.style.opacity = '0';
             setTimeout(() => { loginOverlay.style.display = 'none'; }, 500);
-            
             appInterface.style.opacity = '1';
             appInterface.style.pointerEvents = 'auto';
-
             isAdmin = ADMIN_EMAILS.includes(user.email);
             updateUserUI();
+            
+            // 初始化視圖按鈕
+            switchView(currentView);
             startDataListener();
         } else {
             loginOverlay.style.display = 'flex';
             setTimeout(() => { loginOverlay.style.opacity = '1'; }, 10);
-            
             appInterface.style.opacity = '0';
             appInterface.style.pointerEvents = 'none';
             document.body.classList.remove('is-admin');
@@ -488,30 +375,23 @@
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-password').value;
         const msg = document.getElementById('login-msg');
-        
         if(!email || !pass) { msg.innerText = "請輸入帳號和密碼"; return; }
         msg.innerText = "登入中...";
-
         signInWithEmailAndPassword(auth, email, pass)
             .then(() => {
                 document.getElementById('login-password').value = '';
                 msg.innerText = "";
             })
-            .catch((error) => {
-                msg.innerText = "登入失敗：帳號或密碼錯誤";
-            });
+            .catch((error) => { msg.innerText = "登入失敗：帳號或密碼錯誤"; });
     };
     
     window.logout = () => {
-        signOut(auth).then(() => {
-            window.location.reload();
-        });
+        signOut(auth).then(() => { window.location.reload(); });
     };
 
     function updateUserUI() {
         document.getElementById('user-name').innerText = currentUser.email;
         document.getElementById('user-avatar').innerText = currentUser.email.charAt(0).toUpperCase();
-        
         if (isAdmin) {
             document.body.classList.add('is-admin');
             document.getElementById('admin-label').style.display = 'block';
@@ -521,13 +401,31 @@
         }
     }
 
+    // --- 視圖切換邏輯 (New) ---
+    window.switchView = (mode) => {
+        currentView = mode;
+        localStorage.setItem('stars_view_mode', mode); // 記憶設定
+        
+        // 更新按鈕樣式
+        document.getElementById('btn-list').classList.toggle('active', mode === 'list');
+        document.getElementById('btn-grid').classList.toggle('active', mode === 'grid');
+        
+        // 更新容器 Class
+        const container = document.getElementById('content-container');
+        if(mode === 'list') {
+            container.className = 'list-view-container';
+        } else {
+            container.className = 'grid-view-container';
+        }
+        
+        renderContent(); // 重新渲染內容
+    };
+
     // --- 資料邏輯 ---
     function startDataListener() {
         const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
-        
         onSnapshot(q, (snapshot) => {
             document.getElementById('connection-status').innerText = '🟢 已連線';
-            
             const tempItems = [];
             catCounts = { 'All': 0 };
             categories.forEach(c => catCounts[c] = 0);
@@ -543,56 +441,38 @@
                     if(data.category) catCounts[data.category] = (catCounts[data.category] || 0) + 1;
                 }
             });
-            
             tempItems.sort((a, b) => {
                 if (a.isPinned && !b.isPinned) return -1;
                 if (!a.isPinned && b.isPinned) return 1;
                 return 0; 
             });
-
             items = tempItems;
             renderCategories();
-            renderGrid();
-            
+            renderContent();
             if(!snapshot.size && !categories.length && isAdmin) confirmSetCategory(categories);
-        }, (error) => {
-             console.log("Listen failed: ", error);
-        });
+        }, (error) => { console.log("Listen failed: ", error); });
     }
 
     function renderCategories() {
         const container = document.getElementById('category-container');
-        let html = `
-            <div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')">
-                <span>📂 全部</span>
-                <span class="cat-badge">${catCounts['All']||0}</span>
-            </div>`;
-        
+        let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')"><span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span></div>`;
         categories.forEach(cat => {
-            html += `
-                <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')">
-                    <span>${cat}</span>
-                    <div style="display:flex; align-items:center;">
-                        <span class="cat-badge">${catCounts[cat]||0}</span>
-                        <span class="cat-delete admin-only" onclick="window.deleteCategory('${cat}', event)">✕</span>
-                    </div>
-                </div>`;
+            html += `<div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')"><span>${cat}</span><div style="display:flex; align-items:center;"><span class="cat-badge">${catCounts[cat]||0}</span><span class="cat-delete admin-only" onclick="window.deleteCategory('${cat}', event)">✕</span></div></div>`;
         });
         container.innerHTML = html;
         document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
-    function renderGrid() {
-        const container = document.getElementById('grid-container');
+    // --- 核心渲染 (支援列表/網格) ---
+    function renderContent() {
+        const container = document.getElementById('content-container');
         const searchValue = document.getElementById('search-input').value.toLowerCase();
         document.getElementById('search-clear').style.display = searchValue ? 'block' : 'none';
 
         const filtered = items.filter(item => {
             const matchCat = currentCat === 'All' || item.category === currentCat;
             const tagsStr = (item.tags || []).join(' ').toLowerCase();
-            const matchSearch = item.title.toLowerCase().includes(searchValue) || 
-                                item.content.toLowerCase().includes(searchValue) || 
-                                tagsStr.includes(searchValue);
+            const matchSearch = item.title.toLowerCase().includes(searchValue) || item.content.toLowerCase().includes(searchValue) || tagsStr.includes(searchValue);
             return matchCat && matchSearch;
         });
 
@@ -604,73 +484,69 @@
         }
 
         container.innerHTML = filtered.map(item => {
-            let dateStr = '';
-            if(item.createdAt && item.createdAt.toDate) {
-                const d = item.createdAt.toDate();
-                dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-            }
-
-            return `
-            <div class="card ${item.isPinned ? 'pinned' : ''}">
-                <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}" onclick="window.open('${item.image}', '_blank')">
-                
-                <div class="card-body">
-                    <div class="card-header">
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-actions">
-                            <button class="icon-btn pin-btn admin-only" onclick="window.togglePin('${item.id}', ${item.isPinned})" title="${item.isPinned ? '取消置頂' : '置頂'}">
-                                ${item.isPinned ? '📌' : '📍'}
-                            </button>
-                            <button class="icon-btn admin-only" onclick="window.editItem('${item.id}')">✏️</button>
-                            <button class="icon-btn delete admin-only" onclick="window.deleteItem('${item.id}')">🗑️</button>
+            if (currentView === 'list') {
+                // === 列表模式 HTML ===
+                return `
+                <div class="list-item ${item.isPinned ? 'pinned' : ''}">
+                    ${item.isPinned ? '<span style="font-size:12px; margin-right:5px;">📌</span>' : ''}
+                    
+                    <div class="list-content-wrapper">
+                        <div class="list-header">
+                            <div class="list-title">${item.title}</div>
+                            <span class="list-img-icon ${item.image ? 'has-img' : ''}" title="此素材包含圖片">🖼️</span>
+                            ${(item.tags || []).slice(0, 2).map(t => `<span class="tag" onclick="window.filterTag('${t}')">#${t}</span>`).join('')}
                         </div>
+                        <div class="list-preview">${item.content}</div>
                     </div>
                     
-                    <div class="card-tags">
-                        ${(item.tags || []).map(t => `<span class="tag" onclick="window.filterTag('${t}')">#${t}</span>`).join('')}
-                    </div>
-
-                    ${item.question ? `
-                        <div class="card-question">
-                            <div class="question-label">
-                                💬 對方情境：
-                                <button class="question-copy-btn" onclick="window.copyString('${item.question.replace(/'/g, "\\'")}', this)">複製</button>
-                            </div>
-                            <div class="question-text">${item.question}</div>
-                        </div>
-                    ` : ''}
-
-                    ${item.note ? `<div class="card-note">💡 ${item.note}</div>` : ''}
-                    
-                    <div class="card-text">${item.content}</div>
-                    
-                    <div class="card-footer">
-                        ${dateStr ? `<div class="card-time">${dateStr}</div>` : ''}
-                        <button class="btn-copy" onclick="window.copyText(this)">
-                            <span>📋 複製回覆</span>
+                    <div class="card-actions">
+                        <button class="btn-copy list-mode" onclick="window.copyText(this)">
+                            <span>📋 複製</span>
                             <span style="display:none;">${item.content}</span>
                         </button>
+                        <button class="icon-btn admin-only" onclick="window.editItem('${item.id}')">✏️</button>
+                        <button class="icon-btn delete admin-only" onclick="window.deleteItem('${item.id}')">🗑️</button>
                     </div>
-                </div>
-            </div>
-        `}).join('');
+                </div>`;
+            } else {
+                // === 小圖(Grid)模式 HTML ===
+                let dateStr = '';
+                if(item.createdAt && item.createdAt.toDate) {
+                    const d = item.createdAt.toDate();
+                    dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+                }
+                return `
+                <div class="card ${item.isPinned ? 'pinned' : ''}">
+                    <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}" onclick="window.open('${item.image}', '_blank')">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-actions">
+                                <button class="icon-btn pin-btn admin-only" onclick="window.togglePin('${item.id}', ${item.isPinned})" title="${item.isPinned ? '取消置頂' : '置頂'}">${item.isPinned ? '📌' : '📍'}</button>
+                                <button class="icon-btn admin-only" onclick="window.editItem('${item.id}')">✏️</button>
+                                <button class="icon-btn delete admin-only" onclick="window.deleteItem('${item.id}')">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="card-tags">${(item.tags || []).map(t => `<span class="tag" onclick="window.filterTag('${t}')">#${t}</span>`).join('')}</div>
+                        ${item.question ? `<div class="card-question"><div class="question-label">💬 對方情境：<button class="question-copy-btn" onclick="window.copyString('${item.question.replace(/'/g, "\\'")}', this)">複製</button></div><div class="question-text">${item.question}</div></div>` : ''}
+                        ${item.note ? `<div class="card-note">💡 ${item.note}</div>` : ''}
+                        <div class="card-text">${item.content}</div>
+                        <div class="card-footer">
+                            ${dateStr ? `<div class="card-time">${dateStr}</div>` : ''}
+                            <button class="btn-copy" onclick="window.copyText(this)"><span>📋 複製回覆</span><span style="display:none;">${item.content}</span></button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }).join('');
     }
 
-    // --- 操作邏輯 ---
-    window.filterCat = (cat) => { 
-        currentCat = cat; 
-        renderCategories(); 
-        renderGrid(); 
-        document.querySelector('.sidebar-overlay').classList.remove('open');
-        document.getElementById('sidebar').classList.remove('open');
-    };
-    window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderGrid(); };
-    window.clearSearch = () => { document.getElementById('search-input').value = ''; renderGrid(); };
+    // --- 操作 ---
+    window.filterCat = (cat) => { currentCat = cat; renderCategories(); renderContent(); document.querySelector('.sidebar-overlay').classList.remove('open'); document.getElementById('sidebar').classList.remove('open'); };
+    window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderContent(); };
+    window.clearSearch = () => { document.getElementById('search-input').value = ''; renderContent(); };
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('open'); };
-    
-    window.togglePin = async (id, currentStatus) => {
-        try { await updateDoc(doc(db, collectionName, id), { isPinned: !currentStatus }); } catch(e) { alert('權限不足或錯誤'); }
-    };
+    window.togglePin = async (id, currentStatus) => { try { await updateDoc(doc(db, collectionName, id), { isPinned: !currentStatus }); } catch(e) { alert('權限不足或錯誤'); } };
 
     window.saveItem = async () => {
         if(!isAdmin) return alert("請先登入管理員帳號");
@@ -679,7 +555,6 @@
             category: document.getElementById('input-category').value,
             title: document.getElementById('input-title').value,
             content: document.getElementById('input-content').value,
-            // 新增問題欄位
             question: document.getElementById('input-question').value,
             note: document.getElementById('input-note').value,
             tags: document.getElementById('input-tags').value.split(/[,，]/).map(t=>t.trim()).filter(t=>t),
@@ -702,7 +577,6 @@
         document.getElementById('input-title').value = item.title;
         document.getElementById('input-category').value = item.category;
         document.getElementById('input-content').value = item.content;
-        // 載入問題欄位
         document.getElementById('input-question').value = item.question || '';
         document.getElementById('input-tags').value = (item.tags||[]).join(', ');
         document.getElementById('input-note').value = item.note || '';
@@ -732,7 +606,7 @@
         document.getElementById('edit-id').value = '';
         document.getElementById('input-title').value = '';
         document.getElementById('input-content').value = '';
-        document.getElementById('input-question').value = ''; // 清空問題
+        document.getElementById('input-question').value = ''; 
         document.getElementById('input-note').value = '';
         document.getElementById('input-tags').value = '';
         document.getElementById('image-base64').value = '';
@@ -742,30 +616,22 @@
         document.getElementById('modal').classList.add('open');
     };
     window.closeModal = () => document.getElementById('modal').classList.remove('open');
-    document.getElementById('search-input').addEventListener('input', renderGrid);
+    document.getElementById('search-input').addEventListener('input', renderContent);
     
-    // 複製回覆內容 (HTML按鈕用)
     window.copyText = (btn) => {
         const text = btn.querySelector('span:nth-child(2)').innerText;
         copyToClipboard(text, btn, '✅ 已複製');
     };
+    window.copyString = (text, btn) => { copyToClipboard(text, btn, '已複製'); };
 
-    // 複製純文字 (情境欄位用)
-    window.copyString = (text, btn) => {
-        copyToClipboard(text, btn, '已複製');
-    };
-
-    // 通用複製函式
     function copyToClipboard(text, btn, successText) {
         navigator.clipboard.writeText(text).then(() => {
             const toast = document.getElementById('toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
-            
             const originalText = btn.innerText;
             btn.innerText = successText;
             if(btn.classList.contains('btn-copy')) btn.classList.add('copied');
-            
             setTimeout(() => { 
                 btn.innerText = originalText; 
                 if(btn.classList.contains('btn-copy')) btn.classList.remove('copied');
