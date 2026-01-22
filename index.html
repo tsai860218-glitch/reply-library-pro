@@ -8,7 +8,7 @@
     <title>STARS 素材庫 (Team)</title>
     <style>
         /* =========================================
-           🎨 美化版 CSS (v4.0)
+           🎨 美化版 CSS (v5.0 - Folder System)
            ========================================= */
         :root {
             --primary: #4f46e5;
@@ -23,13 +23,14 @@
             --border-color: #e5e7eb;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --sidebar-width: 280px;
         }
 
         body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-body); margin: 0; display: flex; height: 100vh; color: var(--text-main); overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
@@ -63,16 +64,45 @@
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
         .sidebar-overlay.open { display: block; opacity: 1; }
 
+        /* 側邊欄與分類 (Folder System) */
         aside { width: var(--sidebar-width); background-color: var(--bg-sidebar); box-shadow: 1px 0 0 var(--border-color); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; z-index: 100; transition: transform 0.3s ease; }
         .brand { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .cat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; border-radius: 12px; color: var(--text-secondary); font-weight: 500; transition: 0.2s; }
+        .cat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        
+        /* 母分類 (Folder Header) */
+        .cat-folder { margin-top: 5px; }
+        .cat-folder-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 12px; cursor: pointer; border-radius: 8px; 
+            color: var(--text-main); font-weight: 700; font-size: 14px; 
+            transition: 0.2s; background: #f9fafb;
+        }
+        .cat-folder-header:hover { background: #f3f4f6; }
+        .folder-icon { font-size: 12px; color: #9ca3af; transition: 0.3s; }
+        .cat-folder.open .folder-icon { transform: rotate(90deg); }
+        
+        /* 子分類列表 */
+        .cat-folder-items { 
+            display: none; flex-direction: column; gap: 2px; 
+            margin-top: 4px; padding-left: 12px; border-left: 2px solid #f3f4f6; margin-left: 10px;
+        }
+        .cat-folder.open .cat-folder-items { display: flex; animation: slideDown 0.3s ease; }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 一般分類項目 (Item) */
+        .cat-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 12px; cursor: pointer; border-radius: 8px; 
+            color: var(--text-secondary); font-weight: 500; font-size: 14px; transition: 0.2s; 
+        }
         .cat-item:hover { background-color: #f3f4f6; color: var(--primary); }
         .cat-item.active { background-color: #eef2ff; color: var(--primary); font-weight: 700; }
-        .cat-badge { font-size: 12px; background: #e5e7eb; color: var(--text-secondary); padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center; }
+        .cat-badge { font-size: 11px; background: #e5e7eb; color: var(--text-secondary); padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center; }
         .cat-item.active .cat-badge { background: #c7d2fe; color: var(--primary); }
-        .cat-delete { opacity: 0; margin-left: 8px; color: #ef4444; transition: 0.2s; }
+        .cat-delete { opacity: 0; margin-left: 8px; color: #ef4444; transition: 0.2s; font-size: 12px; }
         .cat-item:hover .cat-delete { opacity: 1; }
+
         .btn-add-cat { margin-top: 15px; width: 100%; padding: 12px; border: 2px dashed #e5e7eb; background: transparent; color: var(--text-secondary); border-radius: 12px; cursor: pointer; font-weight: 600; }
         .btn-add-cat:hover { border-color: var(--primary); color: var(--primary); background: #f9fafb; }
 
@@ -87,7 +117,6 @@
 
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         header { padding: 20px 40px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; z-index: 10; }
-        
         .header-top { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
         .header-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
 
@@ -108,22 +137,12 @@
         .grid-view-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; padding-bottom: 80px; }
         .list-view-container { display: flex; flex-direction: column; gap: 12px; padding-bottom: 80px; }
 
-        /* 卡片設計 - 統一縮圖 */
         .card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
         .card.pinned { border: 2px solid var(--accent); background: #fff7ed; }
         .card.pinned .pin-btn { color: var(--accent); opacity: 1; }
-        
-        /* 統一圖片高度與填滿方式 */
-        .card-img { 
-            width: 100%; height: 180px; /* 固定高度 */
-            background-color: #e5e7eb; 
-            object-fit: cover; /* 關鍵：確保填滿不變形 */
-            border-bottom: 1px solid #f3f4f6; 
-            display: none; cursor: zoom-in; 
-        }
+        .card-img { width: 100%; height: 180px; background-color: #e5e7eb; object-fit: cover; border-bottom: 1px solid #f3f4f6; display: none; cursor: zoom-in; }
         .card-img.show { display: block; }
-        
         .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
         .card-title { font-weight: 700; font-size: 17px; color: var(--text-main); line-height: 1.4; flex: 1; }
@@ -174,7 +193,6 @@
         textarea#input-question { height: 160px !important; min-height: 160px !important; background: #f1f5f9; resize: vertical; border-left: 4px solid #cbd5e1; }
         textarea#input-content { height: 350px !important; min-height: 350px !important; resize: vertical; }
 
-        /* 圖片刪除與預覽 */
         .image-preview-area { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f3f4f6; padding: 10px; border-radius: 8px; }
         .preview-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
         .btn-remove-img { font-size: 13px; color: #ef4444; background: white; border: 1px solid #ef4444; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
@@ -260,10 +278,10 @@
                 </button>
             </div>
             
-            <div class="header-bottom" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="header-bottom">
                 <div id="header-status" style="font-size:13px; color:#6b7280; font-weight:500;"></div>
-                
                 <div class="view-controls">
+                    <span>呈現：</span>
                     <button class="view-btn" id="btn-list" onclick="switchView('list')">☰ 列表</button>
                     <button class="view-btn active" id="btn-grid" onclick="switchView('grid')">⊞ 小圖</button>
                 </div>
@@ -292,7 +310,6 @@
         <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
         
         <div class="modal-label">上傳佐證圖片 (對話截圖)</div>
-        
         <div id="current-image-container" class="image-preview-area" style="display:none;">
             <img id="preview-img" class="preview-thumb">
             <div>
@@ -300,11 +317,9 @@
                 <button type="button" class="btn-remove-img" onclick="removeImage()">🗑️ 刪除圖片</button>
             </div>
         </div>
-
         <input type="file" id="input-image" class="form-control" accept="image/*">
         <div id="compress-msg" style="display:none; color:green; font-size:12px; margin-top:5px;">✅ 圖片已選取並壓縮</div>
         <input type="hidden" id="image-base64">
-        
         <div style="display:flex; align-items:center; gap:8px; font-size:14px; margin-top:10px; color:#4b5563;">
             <input type="checkbox" id="input-pinned" style="width:16px; height:16px;">
             <label for="input-pinned">📌 將此素材置頂 (Pin to Top)</label>
@@ -322,6 +337,13 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    // --- 0. 分類群組設定 (請在此處定義您的資料夾) ---
+    const CATEGORY_GROUPS = {
+        "📦 產品系列": ["營養食品", "美容保養", "家居科技", "產品介紹"],
+        "🛡️ 異議處理": ["價格問題", "直銷觀念", "異議處理"],
+        "📖 團隊資料": ["琴姊專區", "團隊公告", "行政流程"]
+    };
 
     // 1. Config
     const firebaseConfig = {
@@ -351,7 +373,7 @@
     let currentUser = null;
     let isAdmin = false;
     let currentView = localStorage.getItem('stars_view_mode') || 'grid';
-    let isImageDeleted = false; // 追蹤是否刪除了圖片
+    let isImageDeleted = false;
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -427,11 +449,10 @@
         link.click();
     };
 
-    // 刪除圖片邏輯
     window.removeImage = () => {
         document.getElementById('current-image-container').style.display = 'none';
-        document.getElementById('image-base64').value = ''; // 清空暫存
-        isImageDeleted = true; // 標記為已刪除
+        document.getElementById('image-base64').value = ''; 
+        isImageDeleted = true; 
     };
 
     function startDataListener() {
@@ -465,15 +486,71 @@
         }, (error) => { console.log("Listen failed: ", error); });
     }
 
+    // --- 關鍵修改：渲染分類 (支援分組) ---
     function renderCategories() {
         const container = document.getElementById('category-container');
         let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')"><span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span></div>`;
+        
+        let processedCats = new Set();
+
+        // 1. 渲染有群組的分類
+        for (const [groupName, groupCats] of Object.entries(CATEGORY_GROUPS)) {
+            // 檢查該群組內是否有任何分類存在
+            const existingGroupCats = groupCats.filter(c => categories.includes(c));
+            if (existingGroupCats.length > 0) {
+                // 計算群組總數
+                let groupCount = existingGroupCats.reduce((acc, c) => acc + (catCounts[c]||0), 0);
+                
+                html += `
+                <div class="cat-folder" onclick="this.classList.toggle('open')">
+                    <div class="cat-folder-header">
+                        <span>${groupName} <span style="font-weight:normal;color:#9ca3af;font-size:12px;">(${groupCount})</span></span>
+                        <span class="folder-icon">▶</span>
+                    </div>
+                    <div class="cat-folder-items">
+                        ${existingGroupCats.map(cat => {
+                            processedCats.add(cat);
+                            return `
+                            <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}', event)">
+                                <span>${cat}</span>
+                                <div style="display:flex; align-items:center;">
+                                    <span class="cat-badge">${catCounts[cat]||0}</span>
+                                    <span class="cat-delete admin-only" onclick="window.deleteCategory('${cat}', event)">✕</span>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+            }
+        }
+
+        // 2. 渲染未分組的分類
         categories.forEach(cat => {
-            html += `<div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')"><span>${cat}</span><div style="display:flex; align-items:center;"><span class="cat-badge">${catCounts[cat]||0}</span><span class="cat-delete admin-only" onclick="window.deleteCategory('${cat}', event)">✕</span></div></div>`;
+            if (!processedCats.has(cat)) {
+                html += `
+                <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}')">
+                    <span>${cat}</span>
+                    <div style="display:flex; align-items:center;">
+                        <span class="cat-badge">${catCounts[cat]||0}</span>
+                        <span class="cat-delete admin-only" onclick="window.deleteCategory('${cat}', event)">✕</span>
+                    </div>
+                </div>`;
+            }
         });
+
         container.innerHTML = html;
         document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
+
+    // 避免事件冒泡導致資料夾收合
+    window.filterCat = (cat, event) => { 
+        if(event) event.stopPropagation();
+        currentCat = cat; renderCategories(); renderContent(); 
+        if(window.innerWidth <= 768) {
+            document.querySelector('.sidebar-overlay').classList.remove('open'); 
+            document.getElementById('sidebar').classList.remove('open');
+        }
+    };
 
     function renderContent() {
         const container = document.getElementById('content-container');
@@ -545,7 +622,6 @@
         }).join('');
     }
 
-    window.filterCat = (cat) => { currentCat = cat; renderCategories(); renderContent(); document.querySelector('.sidebar-overlay').classList.remove('open'); document.getElementById('sidebar').classList.remove('open'); };
     window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderContent(); };
     window.clearSearch = () => { document.getElementById('search-input').value = ''; renderContent(); };
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('open'); };
@@ -554,17 +630,16 @@
     window.saveItem = async () => {
         if(!isAdmin) return alert("請先登入管理員帳號");
         const id = document.getElementById('edit-id').value;
-        const newImageBase64 = document.getElementById('image-base64').value; // 新選擇的圖 (如果有)
-        const oldImage = items.find(i => i.id === id)?.image || ''; // 舊圖
+        const newImageBase64 = document.getElementById('image-base64').value; 
+        const oldImage = items.find(i => i.id === id)?.image || ''; 
 
-        // 決定最終圖片
         let finalImage = '';
         if (newImageBase64) {
-            finalImage = newImageBase64; // 有新圖就用新圖
+            finalImage = newImageBase64; 
         } else if (isImageDeleted) {
-            finalImage = ''; // 有按刪除，就清空
+            finalImage = ''; 
         } else {
-            finalImage = oldImage; // 沒新圖也沒刪除，保留舊圖
+            finalImage = oldImage; 
         }
 
         const data = {
@@ -598,11 +673,10 @@
         document.getElementById('input-note').value = item.note || '';
         document.getElementById('input-pinned').checked = item.isPinned || false;
         
-        // 圖片處理邏輯
-        document.getElementById('image-base64').value = ''; // 重置新圖
-        document.getElementById('input-image').value = '';  // 重置 Input
+        document.getElementById('image-base64').value = ''; 
+        document.getElementById('input-image').value = '';  
         document.getElementById('compress-msg').style.display = 'none';
-        isImageDeleted = false; // 重置刪除狀態
+        isImageDeleted = false; 
 
         if (item.image) {
             document.getElementById('current-image-container').style.display = 'flex';
@@ -638,14 +712,11 @@
         document.getElementById('input-question').value = ''; 
         document.getElementById('input-note').value = '';
         document.getElementById('input-tags').value = '';
-        
-        // 重置圖片相關
         document.getElementById('image-base64').value = '';
         document.getElementById('input-image').value = '';
         document.getElementById('current-image-container').style.display = 'none';
         document.getElementById('compress-msg').style.display = 'none';
         isImageDeleted = false;
-
         document.getElementById('input-pinned').checked = false;
         if(currentCat !== 'All') document.getElementById('input-category').value = currentCat;
         document.getElementById('modal').classList.add('open');
@@ -674,7 +745,6 @@
         });
     }
 
-    // 壓縮圖片邏輯
     document.getElementById('input-image').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(!file) return;
@@ -693,8 +763,6 @@
                 ctx.drawImage(img, 0, 0, w, h);
                 document.getElementById('image-base64').value = elem.toDataURL('image/jpeg', 0.5);
                 document.getElementById('compress-msg').style.display = 'block';
-                
-                // 如果選了新圖，就把舊圖預覽藏起來 (視為替換)
                 document.getElementById('current-image-container').style.display = 'none';
             };
         };
@@ -702,4 +770,3 @@
 </script>
 </body>
 </html>
-
