@@ -280,7 +280,20 @@
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal { background: white; width: 500px; max-width: 90%; border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
         .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        
+        /* 🔴 關鍵修正：強制這兩個特定欄位變高 */
+        #input-question {
+            height: 150px !important; /* 強制變高 */
+            background: #f9f9f9;
+            resize: vertical; /* 允許使用者拉動 */
+        }
+        #input-content {
+            height: 350px !important; /* 強制變高 */
+            resize: vertical;
+        }
+
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
         
         /* Modal 標籤樣式 */
@@ -379,10 +392,10 @@
         <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
         
         <div class="modal-label">對方問題 / 情境描述 (可被複製)</div>
-        <textarea id="input-question" class="form-control" style="height:160px; background:#f9f9f9;" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
+        <textarea id="input-question" class="form-control" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
 
         <div class="modal-label">回覆內容</div>
-        <textarea id="input-content" class="form-control" style="height:350px" placeholder="輸入建議回覆的話術..."></textarea>
+        <textarea id="input-content" class="form-control" placeholder="輸入建議回覆的話術..."></textarea>
         
         <div class="modal-label">備註</div>
         <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
