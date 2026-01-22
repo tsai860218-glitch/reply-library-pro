@@ -18,6 +18,8 @@
             --white: #ffffff;
             --tag-bg: #e1ecf4;
             --tag-text: #2c5282;
+            --question-bg: #f1f2f6; /* 新增：問題區塊背景色 */
+            --question-text: #57606f;
             --border-radius: 12px;
             --sidebar-width: 280px;
         }
@@ -114,7 +116,7 @@
         .cat-delete { opacity: 0; margin-left: 5px; color: #999; cursor: pointer; }
         .cat-item:hover .cat-delete { opacity: 1; }
         
-        /* --- 修正後的側邊欄底部使用者區塊 (左右排版) --- */
+        /* 側邊欄底部使用者區塊 */
         .user-panel {
             margin-top: auto;
             padding-top: 15px;
@@ -142,7 +144,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-width: 0; /* 讓文字溢出省略生效 */
+            min-width: 0; 
             gap: 4px;
         }
         #user-name {
@@ -200,18 +202,63 @@
         .card.pinned { border: 2px solid var(--accent); background: #fffcf8; }
         .card.pinned .pin-btn { color: var(--accent); opacity: 1; }
         
-        .card-img { width: 100%; height: 140px; background-color: #f0f0f0; object-fit: cover; border-bottom: 1px solid #eee; display: none; }
+        /* 圖片區域：點擊可放大 */
+        .card-img { 
+            width: 100%; 
+            height: 160px; 
+            background-color: #f0f0f0; 
+            object-fit: cover; 
+            border-bottom: 1px solid #eee; 
+            display: none; 
+            cursor: zoom-in;
+        }
         .card-img.show { display: block; }
+
         .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
         .card-title { font-weight: bold; font-size: 16px; color: #2c3e50; line-height: 1.4; flex: 1; }
         
-        .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
         .tag { font-size: 11px; background-color: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; }
         .tag:hover { background-color: #d0e1f0; }
 
-        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; }
-        .card-text { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; margin-bottom: 12px; max-height: 200px; overflow-y: auto; border: 1px solid #eee; }
+        /* --- 新增：對方情境/問題區塊 --- */
+        .card-question {
+            background-color: var(--question-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #95a5a6;
+            position: relative;
+        }
+        .question-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .question-text {
+            font-size: 13px;
+            color: var(--question-text);
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .question-copy-btn {
+            font-size: 10px;
+            color: #3498db;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .question-copy-btn:hover { text-decoration: underline; }
+
+        /* 備註與內容 */
+        .card-note { font-size: 12px; color: #d35400; background: #fff5e6; padding: 8px; border-radius: 6px; margin-bottom: 12px; display: flex; gap: 6px; align-items: flex-start; }
+        .card-text { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; margin-bottom: 12px; max-height: 250px; overflow-y: auto; border: 1px solid #eee; }
         
         .card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
         .card-time { font-size: 11px; color: #aaa; text-align: right; }
@@ -236,6 +283,9 @@
         .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
         
+        /* Modal 標籤樣式 */
+        .modal-label { font-size: 14px; font-weight: bold; color: #555; margin-bottom: -8px; margin-top: 5px; }
+
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; }
         #toast.show { opacity: 1; bottom: 50px; }
         .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888; border: 2px dashed #e0e0e0; border-radius: 16px; margin-top: 20px; background: white; }
@@ -322,16 +372,27 @@
     <div class="modal">
         <h2 id="modal-title" style="margin:0;">新增素材</h2>
         <input type="hidden" id="edit-id">
+        
+        <div class="modal-label">基本資訊</div>
         <select id="input-category" class="form-control"></select>
         <input type="text" id="input-title" class="form-control" placeholder="標題">
         <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
-        <textarea id="input-content" class="form-control" style="height:120px" placeholder="回覆內容..."></textarea>
-        <input type="text" id="input-note" class="form-control" placeholder="備註">
+        
+        <div class="modal-label">對方問題 / 情境描述 (可被複製)</div>
+        <textarea id="input-question" class="form-control" style="height:80px; background:#f9f9f9;" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
+
+        <div class="modal-label">回覆內容</div>
+        <textarea id="input-content" class="form-control" style="height:120px" placeholder="輸入建議回覆的話術..."></textarea>
+        
+        <div class="modal-label">備註</div>
+        <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
+        
+        <div class="modal-label">上傳佐證圖片 (對話截圖)</div>
         <input type="file" id="input-image" class="form-control" accept="image/*">
         <div id="compress-msg" style="display:none; color:green; font-size:12px;">✅ 圖片已處理</div>
         <input type="hidden" id="image-base64">
         
-        <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:14px; margin-top:10px;">
             <input type="checkbox" id="input-pinned">
             <label for="input-pinned">📌 將此素材置頂</label>
         </div>
@@ -351,7 +412,7 @@
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
     // -----------------------------------------------------------
-    // ⚠️ 1. Config (請確認是否正確)
+    // ⚠️ 1. Config
     // -----------------------------------------------------------
     const firebaseConfig = {
         apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
@@ -364,7 +425,7 @@
     };
 
     // -----------------------------------------------------------
-    // ⚠️ 2. 管理員名單 (在這裡設定誰是管理員)
+    // ⚠️ 2. 管理員名單
     // -----------------------------------------------------------
     const ADMIN_EMAILS = ["leader@stars.com"]; 
 
@@ -382,26 +443,23 @@
     let currentUser = null;
     let isAdmin = false;
 
-    // --- 權限狀態監聽 ---
+    // --- 權限與登入邏輯 ---
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
         const loginOverlay = document.getElementById('login-overlay');
         const appInterface = document.getElementById('app-interface');
 
         if (user) {
-            // 登入成功 -> 隱藏遮罩，顯示 App
             loginOverlay.style.opacity = '0';
             setTimeout(() => { loginOverlay.style.display = 'none'; }, 500);
             
             appInterface.style.opacity = '1';
             appInterface.style.pointerEvents = 'auto';
 
-            // 判斷權限
             isAdmin = ADMIN_EMAILS.includes(user.email);
             updateUserUI();
             startDataListener();
         } else {
-            // 未登入 -> 顯示遮罩，隱藏 App
             loginOverlay.style.display = 'flex';
             setTimeout(() => { loginOverlay.style.opacity = '1'; }, 10);
             
@@ -426,7 +484,6 @@
             })
             .catch((error) => {
                 msg.innerText = "登入失敗：帳號或密碼錯誤";
-                console.error(error);
             });
     };
     
@@ -472,7 +529,6 @@
                 }
             });
             
-            // 排序: Pin 優先 -> 時間
             tempItems.sort((a, b) => {
                 if (a.isPinned && !b.isPinned) return -1;
                 if (!a.isPinned && b.isPinned) return 1;
@@ -541,7 +597,8 @@
 
             return `
             <div class="card ${item.isPinned ? 'pinned' : ''}">
-                <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}">
+                <img src="${item.image}" class="card-img ${item.image ? 'show' : ''}" onclick="window.open('${item.image}', '_blank')">
+                
                 <div class="card-body">
                     <div class="card-header">
                         <div class="card-title">${item.title}</div>
@@ -558,13 +615,24 @@
                         ${(item.tags || []).map(t => `<span class="tag" onclick="window.filterTag('${t}')">#${t}</span>`).join('')}
                     </div>
 
+                    ${item.question ? `
+                        <div class="card-question">
+                            <div class="question-label">
+                                💬 對方情境：
+                                <button class="question-copy-btn" onclick="window.copyString('${item.question.replace(/'/g, "\\'")}', this)">複製</button>
+                            </div>
+                            <div class="question-text">${item.question}</div>
+                        </div>
+                    ` : ''}
+
                     ${item.note ? `<div class="card-note">💡 ${item.note}</div>` : ''}
+                    
                     <div class="card-text">${item.content}</div>
                     
                     <div class="card-footer">
                         ${dateStr ? `<div class="card-time">${dateStr}</div>` : ''}
                         <button class="btn-copy" onclick="window.copyText(this)">
-                            <span>📋 複製內容</span>
+                            <span>📋 複製回覆</span>
                             <span style="display:none;">${item.content}</span>
                         </button>
                     </div>
@@ -573,7 +641,7 @@
         `}).join('');
     }
 
-    // --- 操作 ---
+    // --- 操作邏輯 ---
     window.filterCat = (cat) => { 
         currentCat = cat; 
         renderCategories(); 
@@ -596,13 +664,15 @@
             category: document.getElementById('input-category').value,
             title: document.getElementById('input-title').value,
             content: document.getElementById('input-content').value,
+            // 新增問題欄位
+            question: document.getElementById('input-question').value,
             note: document.getElementById('input-note').value,
             tags: document.getElementById('input-tags').value.split(/[,，]/).map(t=>t.trim()).filter(t=>t),
             isPinned: document.getElementById('input-pinned').checked,
             image: document.getElementById('image-base64').value,
             createdAt: serverTimestamp()
         };
-        if(!data.title || !data.content) return alert('必填標題內容');
+        if(!data.title || !data.content) return alert('標題和回覆內容為必填');
         try {
             id ? await updateDoc(doc(db, collectionName, id), data) : await addDoc(collection(db, collectionName), data);
             closeModal();
@@ -617,6 +687,8 @@
         document.getElementById('input-title').value = item.title;
         document.getElementById('input-category').value = item.category;
         document.getElementById('input-content').value = item.content;
+        // 載入問題欄位
+        document.getElementById('input-question').value = item.question || '';
         document.getElementById('input-tags').value = (item.tags||[]).join(', ');
         document.getElementById('input-note').value = item.note || '';
         document.getElementById('input-pinned').checked = item.isPinned || false;
@@ -645,9 +717,11 @@
         document.getElementById('edit-id').value = '';
         document.getElementById('input-title').value = '';
         document.getElementById('input-content').value = '';
+        document.getElementById('input-question').value = ''; // 清空問題
         document.getElementById('input-note').value = '';
         document.getElementById('input-tags').value = '';
         document.getElementById('image-base64').value = '';
+        document.getElementById('input-image').value = '';
         document.getElementById('input-pinned').checked = false;
         if(currentCat !== 'All') document.getElementById('input-category').value = currentCat;
         document.getElementById('modal').classList.add('open');
@@ -655,18 +729,34 @@
     window.closeModal = () => document.getElementById('modal').classList.remove('open');
     document.getElementById('search-input').addEventListener('input', renderGrid);
     
+    // 複製回覆內容 (HTML按鈕用)
     window.copyText = (btn) => {
         const text = btn.querySelector('span:nth-child(2)').innerText;
+        copyToClipboard(text, btn, '✅ 已複製');
+    };
+
+    // 複製純文字 (情境欄位用)
+    window.copyString = (text, btn) => {
+        copyToClipboard(text, btn, '已複製');
+    };
+
+    // 通用複製函式
+    function copyToClipboard(text, btn, successText) {
         navigator.clipboard.writeText(text).then(() => {
             const toast = document.getElementById('toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
-            btn.classList.add('copied');
-            const original = btn.querySelector('span:nth-child(1)').innerText;
-            btn.querySelector('span:nth-child(1)').innerText = '✅ 已複製';
-            setTimeout(() => { btn.classList.remove('copied'); btn.querySelector('span:nth-child(1)').innerText = original; }, 1000);
+            
+            const originalText = btn.innerText;
+            btn.innerText = successText;
+            if(btn.classList.contains('btn-copy')) btn.classList.add('copied');
+            
+            setTimeout(() => { 
+                btn.innerText = originalText; 
+                if(btn.classList.contains('btn-copy')) btn.classList.remove('copied');
+            }, 1000);
         });
-    };
+    }
 
     document.getElementById('input-image').addEventListener('change', function(e) {
         const file = e.target.files[0];
