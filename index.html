@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>回覆素材庫 (雲端同步版)</title>
+    <title>STARS 雲端素材庫</title>
     <style>
-        /* 保持原本漂亮的 UI 設計 */
+        /* UI 設定 - 保持簡潔美觀 */
         :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f3f4f6; --white: #ffffff; --tag-bg: #e1ecf4; --tag-text: #2c5282; --border-radius: 12px; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
         
@@ -70,7 +70,7 @@
 <body>
 
 <aside>
-    <div class="brand">☁️ 雲端素材庫</div>
+    <div class="brand">☁️ STARS 素材庫</div>
     <div class="cat-list" id="category-container"></div>
     <button class="btn-add-cat" onclick="addNewCategory()">+ 新增分類</button>
     <div class="status-bar" id="connection-status">連線中...</div>
@@ -113,40 +113,37 @@
 <div id="toast">已複製！</div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    // 使用你指定的 12.8.0 版本
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
     // -----------------------------------------------------------
-    //const firebaseConfig = {
-  apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
-  authDomain: "reply-library-pro.firebaseapp.com",
-  projectId: "reply-library-pro",
-  storageBucket: "reply-library-pro.firebasestorage.app",
-  messagingSenderId: "1008012662526",
-  appId: "1:1008012662526:web:947db988fefe43e3cef7af",
-  measurementId: "G-6G30XHB8Y1"
-};
+    // 你的 Firebase Config
     // -----------------------------------------------------------
     const firebaseConfig = {
-        // ... 把你的內容貼在這裡，例如:
-        // apiKey: "AIzaSyD...",
-        // authDomain: "...",
-        // projectId: "...",
+        apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
+        authDomain: "reply-library-pro.firebaseapp.com",
+        projectId: "reply-library-pro",
+        storageBucket: "reply-library-pro.firebasestorage.app",
+        messagingSenderId: "1008012662526",
+        appId: "1:1008012662526:web:947db988fefe43e3cef7af",
+        measurementId: "G-6G30XHB8Y1"
     };
 
-    // 初始化 Firebase
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const collectionName = "replies"; // 資料庫名稱
-    const categoryDocId = "settings_categories"; // 存放分類的特殊文件
+    const analytics = getAnalytics(app); // 初始化 Analytics
+    const db = getFirestore(app); // 初始化資料庫
 
-    // 變數
+    const collectionName = "replies";
+    const categoryDocId = "settings_categories";
+
     let items = [];
-    let categories = ['常用問候', '產品介紹', '異議處理'];
+    let categories = ['常用問候', '產品介紹', '異議處理']; // 預設值，會被雲端覆蓋
     let currentCat = 'All';
 
-    // --- 監聽資料 (Real-time Listener) ---
-    // 這是最神奇的地方：只要資料庫有變動，這裡會自動執行
+    // 監聽資料
     const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -154,24 +151,36 @@
         document.getElementById('connection-status').innerText = '🟢 已連線同步';
         
         const tempItems = [];
+        let hasCategoryDoc = false;
+
         snapshot.forEach((doc) => {
             if(doc.id === categoryDocId) {
-                // 這是分類設定檔
                 categories = doc.data().list || categories;
+                hasCategoryDoc = true;
                 renderCategories();
             } else {
-                // 這是回覆素材
                 tempItems.push({ id: doc.id, ...doc.data() });
             }
         });
         items = tempItems;
         renderGrid();
+        
+        // 如果雲端完全沒資料，就建立預設分類
+        if(!hasCategoryDoc && items.length === 0) {
+           comfirmSetCategory(categories);
+        }
+
     }, (error) => {
         console.error("Error:", error);
         document.getElementById('connection-status').innerText = '🔴 連線失敗';
+        if(error.code === 'permission-denied') {
+            document.getElementById('loading').innerText = '錯誤：權限不足。請檢查 Firebase Console 的 Database Rules 是否已設為 Test Mode。';
+        } else {
+            document.getElementById('loading').innerText = '連線錯誤：' + error.message;
+        }
     });
 
-    // --- 渲染分類 ---
+    // 渲染 UI
     function renderCategories() {
         const container = document.getElementById('category-container');
         let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')">📂 全部</div>`;
@@ -180,25 +189,24 @@
                      <span style="font-size:10px; margin-left:5px; opacity:0.5;" onclick="window.deleteCategory('${cat}', event)">✕</span></div>`;
         });
         container.innerHTML = html;
-        
-        // 更新下拉選單
         const select = document.getElementById('input-category');
         select.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
-    // --- 渲染卡片 ---
     function renderGrid() {
         const container = document.getElementById('grid-container');
         const search = document.getElementById('search-input').value.toLowerCase();
-        
         const filtered = items.filter(item => {
             const matchCat = currentCat === 'All' || item.category === currentCat;
             const tagsStr = (item.tags || []).join(' ').toLowerCase();
-            const matchSearch = item.title.toLowerCase().includes(search) || 
-                                item.content.toLowerCase().includes(search) || 
-                                tagsStr.includes(search);
+            const matchSearch = item.title.toLowerCase().includes(search) || item.content.toLowerCase().includes(search) || tagsStr.includes(search);
             return matchCat && matchSearch;
         });
+
+        if(filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#ccc; width:100%; margin-top:50px;">暫無資料</div>`;
+            return;
+        }
 
         container.innerHTML = filtered.map(item => `
             <div class="card">
@@ -220,10 +228,8 @@
         `).join('');
     }
 
-    // --- 操作功能 (綁定到 window 以便 HTML 呼叫) ---
+    // 功能邏輯
     window.filterCat = (cat) => { currentCat = cat; renderCategories(); renderGrid(); };
-    
-    // 新增/儲存資料 (寫入 Firestore)
     window.saveItem = async () => {
         const id = document.getElementById('edit-id').value;
         const data = {
@@ -233,33 +239,18 @@
             note: document.getElementById('input-note').value,
             tags: document.getElementById('input-tags').value.split(/[,，]/).map(t=>t.trim()).filter(t=>t),
             image: document.getElementById('image-base64').value,
-            createdAt: serverTimestamp() // 用伺服器時間排序
+            createdAt: serverTimestamp()
         };
-
         if(!data.title || !data.content) return alert('請填寫標題和內容');
-        
         document.getElementById('modal-title').innerText = '儲存中...';
-        
         try {
-            if(id) {
-                await updateDoc(doc(db, collectionName, id), data);
-            } else {
-                await addDoc(collection(db, collectionName), data);
-            }
+            id ? await updateDoc(doc(db, collectionName, id), data) : await addDoc(collection(db, collectionName), data);
             closeModal();
-        } catch(e) {
-            alert('儲存失敗：' + e.message);
-        }
+        } catch(e) { alert('儲存失敗：' + e.message); }
     };
 
-    // 刪除資料
-    window.deleteItem = async (id) => {
-        if(confirm('確定要刪除嗎？此動作會同步刪除所有裝置上的資料。')) {
-            await deleteDoc(doc(db, collectionName, id));
-        }
-    };
+    window.deleteItem = async (id) => { if(confirm('確定刪除？')) await deleteDoc(doc(db, collectionName, id)); };
 
-    // 編輯準備
     window.editItem = (id) => {
         const item = items.find(i => i.id === id);
         if(!item) return;
@@ -273,39 +264,24 @@
         document.getElementById('modal').classList.add('open');
     };
 
-    // 分類管理 (存到特殊的 category doc)
     window.addNewCategory = async () => {
         const name = prompt("新分類名稱：");
-        if(name && !categories.includes(name)) {
-            const newList = [...categories, name];
-            // 更新或建立分類設定檔
-            await comfirmSetCategory(newList);
-        }
+        if(name && !categories.includes(name)) await comfirmSetCategory([...categories, name]);
     };
     
     window.deleteCategory = async (cat, e) => {
         e.stopPropagation();
         if(confirm(`刪除分類 ${cat}?`)) {
-            const newList = categories.filter(c => c !== cat);
-            await comfirmSetCategory(newList);
+            await comfirmSetCategory(categories.filter(c => c !== cat));
             if(currentCat === cat) currentCat = 'All';
         }
     };
 
     async function comfirmSetCategory(list) {
-        // 使用 setDoc 與 merge 選項，確保文件存在
-        try {
-             // 這裡需要動態載入 setDoc，上面 import 沒加到，稍微補救一下 logic
-             // 為了簡單，我們直接用 updateDoc, 如果失敗代表沒文件則用 addDoc (但在這架構下我們簡化處理)
-             // 正確做法：我們假設第一次會失敗，所以直接寫入
-             const { setDoc } = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js");
-             await setDoc(doc(db, collectionName, categoryDocId), { list: list });
-        } catch(e) {
-            console.error(e);
-        }
+        await setDoc(doc(db, collectionName, categoryDocId), { list: list }, { merge: true });
     }
 
-    // Modal & UI Utils
+    // UI Helper
     window.openModal = () => {
         document.getElementById('edit-id').value = '';
         document.getElementById('input-title').value = '';
@@ -318,8 +294,6 @@
     };
     window.closeModal = () => document.getElementById('modal').classList.remove('open');
     document.getElementById('search-input').addEventListener('input', renderGrid);
-
-    // 複製功能
     window.copyText = (btn) => {
         const text = btn.querySelector('span:nth-child(2)').innerText;
         navigator.clipboard.writeText(text).then(() => {
@@ -329,7 +303,7 @@
         });
     };
 
-    // 圖片壓縮
+    // 圖片處理
     document.getElementById('input-image').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(!file) return;
