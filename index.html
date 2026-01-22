@@ -18,7 +18,7 @@
             --white: #ffffff;
             --tag-bg: #e1ecf4;
             --tag-text: #2c5282;
-            --question-bg: #f1f2f6; /* 新增：問題區塊背景色 */
+            --question-bg: #f1f2f6;
             --question-text: #57606f;
             --border-radius: 12px;
             --sidebar-width: 280px;
@@ -222,7 +222,7 @@
         .tag { font-size: 11px; background-color: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; }
         .tag:hover { background-color: #d0e1f0; }
 
-        /* --- 新增：對方情境/問題區塊 --- */
+        /* 對方情境/問題區塊 */
         .card-question {
             background-color: var(--question-bg);
             padding: 10px;
@@ -379,10 +379,10 @@
         <input type="text" id="input-tags" class="form-control" placeholder="標籤 (例如: VIP, 促銷)">
         
         <div class="modal-label">對方問題 / 情境描述 (可被複製)</div>
-        <textarea id="input-question" class="form-control" style="height:80px; background:#f9f9f9;" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
+        <textarea id="input-question" class="form-control" style="height:120px; background:#f9f9f9;" placeholder="紀錄對方的問題原委，例如：對方覺得太貴..."></textarea>
 
         <div class="modal-label">回覆內容</div>
-        <textarea id="input-content" class="form-control" style="height:120px" placeholder="輸入建議回覆的話術..."></textarea>
+        <textarea id="input-content" class="form-control" style="height:250px" placeholder="輸入建議回覆的話術..."></textarea>
         
         <div class="modal-label">備註</div>
         <input type="text" id="input-note" class="form-control" placeholder="給自己的小提醒 (僅顯示在卡片上)">
