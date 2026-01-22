@@ -113,13 +113,12 @@
 <div id="toast">已複製！</div>
 
 <script type="module">
-    // 使用你指定的 12.8.0 版本
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
     // -----------------------------------------------------------
-    // 你的 Firebase Config
+    // 你的 Firebase Config (已幫你填好)
     // -----------------------------------------------------------
     const firebaseConfig = {
         apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
@@ -133,14 +132,14 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app); // 初始化 Analytics
-    const db = getFirestore(app); // 初始化資料庫
+    const analytics = getAnalytics(app); 
+    const db = getFirestore(app);
 
     const collectionName = "replies";
     const categoryDocId = "settings_categories";
 
     let items = [];
-    let categories = ['常用問候', '產品介紹', '異議處理']; // 預設值，會被雲端覆蓋
+    let categories = ['常用問候', '產品介紹', '異議處理']; 
     let currentCat = 'All';
 
     // 監聽資料
@@ -155,10 +154,12 @@
 
         snapshot.forEach((doc) => {
             if(doc.id === categoryDocId) {
+                // 收到分類設定檔
                 categories = doc.data().list || categories;
                 hasCategoryDoc = true;
                 renderCategories();
             } else {
+                // 收到一般內容
                 tempItems.push({ id: doc.id, ...doc.data() });
             }
         });
@@ -167,7 +168,7 @@
         
         // 如果雲端完全沒資料，就建立預設分類
         if(!hasCategoryDoc && items.length === 0) {
-           comfirmSetCategory(categories);
+           confirmSetCategory(categories);
         }
 
     }, (error) => {
@@ -266,19 +267,23 @@
 
     window.addNewCategory = async () => {
         const name = prompt("新分類名稱：");
-        if(name && !categories.includes(name)) await comfirmSetCategory([...categories, name]);
+        if(name && !categories.includes(name)) await confirmSetCategory([...categories, name]);
     };
     
     window.deleteCategory = async (cat, e) => {
         e.stopPropagation();
         if(confirm(`刪除分類 ${cat}?`)) {
-            await comfirmSetCategory(categories.filter(c => c !== cat));
+            await confirmSetCategory(categories.filter(c => c !== cat));
             if(currentCat === cat) currentCat = 'All';
         }
     };
 
-    async function comfirmSetCategory(list) {
-        await setDoc(doc(db, collectionName, categoryDocId), { list: list }, { merge: true });
+    // 關鍵修正：加入 serverTimestamp() 以確保分類檔案能在 orderBy 查詢中出現
+    async function confirmSetCategory(list) {
+        await setDoc(doc(db, collectionName, categoryDocId), { 
+            list: list,
+            createdAt: serverTimestamp() 
+        }, { merge: true });
     }
 
     // UI Helper
