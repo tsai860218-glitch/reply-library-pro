@@ -8,7 +8,7 @@
     <title>STARS 素材庫 (Team)</title>
     <style>
         /* =========================================
-           🎨 美化版 CSS (v6.0 - Category Management)
+           🎨 美化版 CSS (v6.0 - Manager Mode)
            ========================================= */
         :root {
             --primary: #4f46e5;
@@ -27,9 +27,9 @@
             --sidebar-width: 280px;
             
             /* 管理模式專用色 */
-            --danger-bg: #fef2f2;
-            --danger-border: #fee2e2;
-            --danger-text: #ef4444;
+            --danger-bg: #fff1f2;
+            --danger-border: #fecdd3;
+            --danger-text: #be123c;
         }
 
         body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-body); margin: 0; display: flex; height: 100vh; color: var(--text-main); overflow: hidden; }
@@ -70,16 +70,16 @@
         .sidebar-overlay.open { display: block; opacity: 1; }
 
         /* 側邊欄與分類 (Folder System) */
-        aside { width: var(--sidebar-width); background-color: var(--bg-sidebar); box-shadow: 1px 0 0 var(--border-color); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; z-index: 100; transition: transform 0.3s ease; }
+        aside { width: var(--sidebar-width); background-color: var(--bg-sidebar); box-shadow: 1px 0 0 var(--border-color); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; z-index: 100; transition: background-color 0.3s ease; }
         
-        /* 🔴 編輯模式的側邊欄樣式 */
+        /* 🔴 管理模式樣式 */
         aside.edit-mode { background-color: var(--danger-bg); border-right: 2px solid var(--danger-border); }
         aside.edit-mode .brand { color: var(--danger-text); }
         
         .brand { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .cat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
         
-        /* 母分類 */
+        /* 母分類 (Folder) */
         .cat-folder { margin-top: 5px; }
         .cat-folder-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; transition: 0.2s; background: #f9fafb; }
         .cat-folder-header:hover { background: #f3f4f6; }
@@ -89,31 +89,31 @@
         .cat-folder.open .cat-folder-items { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 一般分類項目 */
+        /* 子分類 (Item) */
         .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text-secondary); font-weight: 500; font-size: 14px; transition: 0.2s; }
         .cat-item:hover { background-color: #f3f4f6; color: var(--primary); }
         .cat-item.active { background-color: #eef2ff; color: var(--primary); font-weight: 700; }
         .cat-badge { font-size: 11px; background: #e5e7eb; color: var(--text-secondary); padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center; }
         .cat-item.active .cat-badge { background: #c7d2fe; color: var(--primary); }
         
-        /* 🔴 編輯按鈕 (預設隱藏) */
-        .cat-actions { display: none; gap: 5px; }
-        .cat-btn-edit, .cat-btn-del { font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd; background: white; cursor: pointer; }
-        .cat-btn-edit:hover { background: #eff6ff; color: var(--primary); border-color: var(--primary); }
-        .cat-btn-del:hover { background: #fef2f2; color: #ef4444; border-color: #ef4444; }
-
-        /* 🔴 編輯模式樣式覆蓋 */
-        .edit-mode .cat-badge { display: none; } /* 隱藏數字 */
-        .edit-mode .cat-actions { display: flex; } /* 顯示按鈕 */
-        .edit-mode .cat-item:hover { background: white; cursor: default; } /* 取消hover */
+        /* 管理模式按鈕 */
+        .manage-actions { display: none; gap: 4px; }
+        .btn-mini { font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: white; cursor: pointer; opacity: 0.8; }
+        .btn-mini:hover { opacity: 1; transform: scale(1.05); }
+        
+        /* 管理模式下的覆蓋樣式 */
+        .edit-mode .cat-badge { display: none; }
+        .edit-mode .manage-actions { display: flex; }
+        .edit-mode .cat-item:hover { background: rgba(255,255,255,0.5); cursor: default; }
+        .edit-mode .cat-folder-header { background: rgba(255,255,255,0.5); }
 
         .btn-add-cat { margin-top: 10px; width: 100%; padding: 12px; border: 2px dashed #e5e7eb; background: transparent; color: var(--text-secondary); border-radius: 12px; cursor: pointer; font-weight: 600; }
         .btn-add-cat:hover { border-color: var(--primary); color: var(--primary); background: #f9fafb; }
         
-        /* 管理模式切換按鈕 */
-        .btn-manage-cat { margin-top: 5px; width: 100%; padding: 10px; border: none; background: transparent; color: #9ca3af; border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
-        .btn-manage-cat:hover { background: #f3f4f6; color: var(--text-main); }
-        .btn-manage-cat.active { background: var(--danger-bg); color: var(--danger-text); font-weight: bold; }
+        /* 管理切換按鈕 */
+        .btn-manage-toggle { margin-top: 5px; width: 100%; padding: 10px; border: none; background: transparent; color: #9ca3af; border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-manage-toggle:hover { color: var(--text-main); background: #f3f4f6; }
+        .btn-manage-toggle.active { background: var(--danger-text); color: white; font-weight: bold; }
 
         .user-panel { margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; text-transform: uppercase; }
@@ -146,6 +146,7 @@
         .grid-view-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; padding-bottom: 80px; }
         .list-view-container { display: flex; flex-direction: column; gap: 12px; padding-bottom: 80px; }
 
+        /* 卡片設計 */
         .card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
         .card.pinned { border: 2px solid var(--accent); background: #fff7ed; }
@@ -192,6 +193,7 @@
         .is-admin .admin-only { display: flex !important; }
         .is-admin span.admin-only { display: inline-block !important; }
 
+        /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal { background: white; width: 550px; max-width: 90%; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
@@ -199,6 +201,7 @@
         .form-control:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
         .modal-label { font-size: 14px; font-weight: 700; color: #374151; margin-bottom: -8px; margin-top: 8px; }
+        
         textarea#input-question { height: 160px !important; min-height: 160px !important; background: #f1f5f9; resize: vertical; border-left: 4px solid #cbd5e1; }
         textarea#input-content { height: 350px !important; min-height: 350px !important; resize: vertical; }
 
@@ -206,6 +209,9 @@
         .preview-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
         .btn-remove-img { font-size: 13px; color: #ef4444; background: white; border: 1px solid #ef4444; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
         .btn-remove-img:hover { background: #ef4444; color: white; }
+
+        /* 特殊 Modal: 分類編輯 */
+        #cat-edit-modal .modal { width: 400px; }
 
         #toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1f2937; color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; z-index: 3000; font-weight: 600; box-shadow: var(--shadow-lg); }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -261,8 +267,9 @@
         <div class="brand">✨ STARS 素材庫</div>
         <div class="cat-list" id="category-container"></div>
         
-        <button class="btn-add-cat admin-only" onclick="addNewCategory()">+ 新增分類</button>
-        <button class="btn-manage-cat admin-only" id="btn-manage-cat" onclick="toggleCategoryEditMode()">⚙️ 管理分類</button>
+        <button class="btn-add-cat admin-only" onclick="openCatEditModal(true)">+ 新增分類</button>
+        <button class="btn-add-cat admin-only" onclick="window.addFolder()" style="margin-top:5px; border-style:solid;">+ 新增資料夾</button>
+        <button class="btn-manage-toggle admin-only" id="btn-manage-cat" onclick="toggleCategoryEditMode()">⚙️ 管理分類</button>
         
         <div class="user-panel">
             <div id="user-avatar" class="user-avatar"></div>
@@ -343,19 +350,34 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="cat-edit-modal">
+    <div class="modal">
+        <h2 style="margin:0; font-size:20px; color:var(--text-main);">編輯分類</h2>
+        <input type="hidden" id="cat-edit-old-name">
+        
+        <div class="modal-label">分類名稱</div>
+        <input type="text" id="cat-edit-name" class="form-control">
+        
+        <div class="modal-label">所屬資料夾</div>
+        <select id="cat-edit-group" class="form-control">
+            <option value="">(無資料夾 - 顯示在最外層)</option>
+        </select>
+        
+        <div style="font-size:12px; color:#ef4444; margin-top:10px;">⚠️ 修改名稱後，系統將自動更新所有關聯的卡片。</div>
+        
+        <div class="modal-footer">
+            <button onclick="document.getElementById('cat-edit-modal').classList.remove('open')" style="padding:8px 20px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">取消</button>
+            <button class="btn-primary" onclick="confirmCategoryEdit()">確認修改</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast">已複製！</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-    // --- 0. 分類群組設定 ---
-    const CATEGORY_GROUPS = {
-        "📦 產品系列": ["營養食品", "美容保養", "家居科技", "產品介紹"],
-        "🛡️ 異議處理": ["價格問題", "直銷觀念", "異議處理"],
-        "📖 團隊資料": ["琴姊專區", "團隊公告", "行政流程"]
-    };
 
     // 1. Config
     const firebaseConfig = {
@@ -378,15 +400,18 @@
     const collectionName = "replies";
     const categoryDocId = "settings_categories";
 
-    let items = [];
+    // 預設資料結構 (若 DB 為空時使用)
     let categories = ['常用問候', '產品介紹', '異議處理'];
+    let categoryGroups = {}; // 格式: { "產品系列": ["產品介紹"], "異議": ["異議處理"] }
+    
+    let items = [];
     let currentCat = 'All';
     let catCounts = {};
     let currentUser = null;
     let isAdmin = false;
     let currentView = localStorage.getItem('stars_view_mode') || 'grid';
     let isImageDeleted = false;
-    let isCategoryEditMode = false; // 分類管理模式開關
+    let isCategoryEditMode = false;
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -436,7 +461,7 @@
         }
     }
 
-    // --- 分類管理模式 (New) ---
+    // --- 管理模式開關 ---
     window.toggleCategoryEditMode = () => {
         isCategoryEditMode = !isCategoryEditMode;
         const sidebar = document.getElementById('sidebar');
@@ -451,49 +476,268 @@
             btn.innerHTML = '⚙️ 管理分類';
             btn.classList.remove('active');
         }
-        renderCategories(); // 重新渲染分類列表
+        renderCategories(); 
     };
 
-    // 改名分類 (Batch Update)
-    window.renameCategory = async (oldName, event) => {
-        if(event) event.stopPropagation();
-        const newName = prompt(`請輸入「${oldName}」的新名稱：`, oldName);
-        if (!newName || newName === oldName) return;
-        if (categories.includes(newName)) return alert("該分類名稱已存在！");
-
-        if(!confirm(`確定要將「${oldName}」改為「${newName}」嗎？\n⚠️ 系統將自動更新所有關聯的卡片。`)) return;
-
-        // 1. 更新分類列表
-        const newCategories = categories.map(c => c === oldName ? newName : c);
+    // --- 分類操作：新增/編輯/刪除 ---
+    
+    // 1. 開啟編輯 Modal
+    window.openCatEditModal = (isNew, catName = "") => {
+        if(!isAdmin) return;
         
-        // 2. 批次更新所有卡片
+        const modal = document.getElementById('cat-edit-modal');
+        const inputName = document.getElementById('cat-edit-name');
+        const inputOldName = document.getElementById('cat-edit-old-name');
+        const selectGroup = document.getElementById('cat-edit-group');
+        
+        // 填入資料夾選項
+        selectGroup.innerHTML = '<option value="">(無資料夾 - 顯示在最外層)</option>';
+        Object.keys(categoryGroups).forEach(group => {
+            selectGroup.innerHTML += `<option value="${group}">${group}</option>`;
+        });
+
+        if(isNew) {
+            inputName.value = "";
+            inputOldName.value = "";
+            selectGroup.value = "";
+        } else {
+            inputName.value = catName;
+            inputOldName.value = catName;
+            // 找出目前所屬群組
+            let currentGroup = "";
+            for(const [gName, list] of Object.entries(categoryGroups)) {
+                if(list.includes(catName)) currentGroup = gName;
+            }
+            selectGroup.value = currentGroup;
+        }
+        
+        modal.classList.add('open');
+    };
+
+    // 2. 確認儲存分類 (含 Batch Update)
+    window.confirmCategoryEdit = async () => {
+        const oldName = document.getElementById('cat-edit-old-name').value;
+        const newName = document.getElementById('cat-edit-name').value.trim();
+        const targetGroup = document.getElementById('cat-edit-group').value;
+        
+        if(!newName) return alert("分類名稱不能為空");
+        if(oldName && newName !== oldName && categories.includes(newName)) return alert("該分類名稱已存在");
+
+        // 更新資料結構
+        let newCategories = [...categories];
+        let newGroups = JSON.parse(JSON.stringify(categoryGroups)); // Deep copy
+
+        // 如果是改名
+        if(oldName && oldName !== newName) {
+            const idx = newCategories.indexOf(oldName);
+            if(idx > -1) newCategories[idx] = newName;
+            
+            // 更新 Group 內的名稱
+            for(const g in newGroups) {
+                const gIdx = newGroups[g].indexOf(oldName);
+                if(gIdx > -1) newGroups[g][gIdx] = newName;
+            }
+        } else if(!oldName && !categories.includes(newName)) {
+            // 新增
+            newCategories.push(newName);
+        }
+
+        // 處理群組移動
+        // 先從舊群組移除
+        for(const g in newGroups) {
+            newGroups[g] = newGroups[g].filter(c => c !== (oldName || newName)); // 移除舊名或新名(防重複)
+        }
+        // 加入新群組
+        if(targetGroup) {
+            if(!newGroups[targetGroup]) newGroups[targetGroup] = [];
+            newGroups[targetGroup].push(newName);
+        }
+
         try {
             const batch = writeBatch(db);
-            // 更新分類表
             const catRef = doc(db, collectionName, categoryDocId);
-            batch.set(catRef, { list: newCategories, createdAt: serverTimestamp() }, { merge: true });
-
-            // 查詢所有舊分類卡片
-            const q = query(collection(db, collectionName), where("category", "==", oldName));
-            const querySnapshot = await getDocs(q);
             
-            querySnapshot.forEach((doc) => {
-                batch.update(doc.ref, { category: newName });
-            });
+            // 1. 寫入設定檔
+            batch.set(catRef, { list: newCategories, structure: newGroups, createdAt: serverTimestamp() }, { merge: true });
+
+            // 2. 如果是改名，批次更新所有卡片
+            if(oldName && oldName !== newName) {
+                const q = query(collection(db, collectionName), where("category", "==", oldName));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    batch.update(doc.ref, { category: newName });
+                });
+            }
 
             await batch.commit();
-            alert("更新完成！");
+            document.getElementById('cat-edit-modal').classList.remove('open');
+            // alert(oldName ? "修改成功" : "新增成功");
         } catch (e) {
-            alert("更新失敗：" + e.message);
+            alert("儲存失敗：" + e.message);
         }
     };
 
-    // 刪除分類 (僅刪除列表，不刪卡片)
+    // 3. 刪除分類
     window.deleteCategory = async (cat, event) => {
         if(event) event.stopPropagation();
         if(confirm(`確定刪除分類「${cat}」嗎？\n(注意：屬於此分類的卡片不會被刪除，但會暫時找不到分類)`)) {
-            await confirmSetCategory(categories.filter(c => c !== cat));
+            // 從 list 移除
+            const newCategories = categories.filter(c => c !== cat);
+            // 從 groups 移除
+            const newGroups = JSON.parse(JSON.stringify(categoryGroups));
+            for(const g in newGroups) {
+                newGroups[g] = newGroups[g].filter(c => c !== cat);
+            }
+            await saveSettings(newCategories, newGroups);
             if(currentCat === cat) window.filterCat('All');
+        }
+    };
+
+    // --- 資料夾操作 ---
+    window.addFolder = async () => {
+        const name = prompt("請輸入新資料夾名稱：");
+        if(name) {
+            if(categoryGroups[name]) return alert("資料夾已存在");
+            const newGroups = { ...categoryGroups, [name]: [] };
+            await saveSettings(categories, newGroups);
+        }
+    };
+
+    window.renameFolder = async (oldName, event) => {
+        if(event) event.stopPropagation();
+        const newName = prompt("重新命名資料夾：", oldName);
+        if(newName && newName !== oldName) {
+            const newGroups = { ...categoryGroups };
+            newGroups[newName] = newGroups[oldName];
+            delete newGroups[oldName];
+            await saveSettings(categories, newGroups);
+        }
+    };
+
+    window.deleteFolder = async (folderName, event) => {
+        if(event) event.stopPropagation();
+        if(confirm(`確定刪除資料夾「${folderName}」嗎？\n(裡面的分類會回到最外層)`)) {
+            const newGroups = { ...categoryGroups };
+            delete newGroups[folderName];
+            await saveSettings(categories, newGroups);
+        }
+    };
+
+    // 通用儲存設定函式
+    async function saveSettings(newList, newGroups) {
+        await setDoc(doc(db, collectionName, categoryDocId), { 
+            list: newList, 
+            structure: newGroups,
+            createdAt: serverTimestamp() 
+        }, { merge: true });
+    }
+
+    // --- 資料監聽 ---
+    function startDataListener() {
+        const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            document.getElementById('connection-status').innerText = '🟢 已連線';
+            const tempItems = [];
+            catCounts = { 'All': 0 };
+            categories.forEach(c => catCounts[c] = 0);
+
+            snapshot.forEach((doc) => {
+                if(doc.id === categoryDocId) {
+                    const data = doc.data();
+                    categories = data.list || categories;
+                    categoryGroups = data.structure || {}; // 讀取資料夾結構
+                    categories.forEach(c => { if(catCounts[c] === undefined) catCounts[c] = 0; });
+                } else {
+                    const data = doc.data();
+                    tempItems.push({ id: doc.id, ...data });
+                    catCounts['All']++;
+                    if(data.category) catCounts[data.category] = (catCounts[data.category] || 0) + 1;
+                }
+            });
+            tempItems.sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return 0; 
+            });
+            items = tempItems;
+            renderCategories();
+            renderContent();
+        });
+    }
+
+    function renderCategories() {
+        const container = document.getElementById('category-container');
+        let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')"><span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span></div>`;
+        
+        let processedCats = new Set();
+
+        // 1. 渲染資料夾
+        for (const [groupName, groupCats] of Object.entries(categoryGroups)) {
+            // 管理模式下，即使資料夾是空的也顯示
+            const existingGroupCats = groupCats.filter(c => categories.includes(c));
+            if (existingGroupCats.length > 0 || isCategoryEditMode) {
+                let groupCount = existingGroupCats.reduce((acc, c) => acc + (catCounts[c]||0), 0);
+                
+                // 管理按鈕 (資料夾)
+                const folderActions = isCategoryEditMode 
+                    ? `<div class="manage-actions" onclick="event.stopPropagation()">
+                         <button class="btn-mini" onclick="window.renameFolder('${groupName}', event)">✏️</button>
+                         <button class="btn-mini" onclick="window.deleteFolder('${groupName}', event)">🗑️</button>
+                       </div>` 
+                    : `<span class="folder-icon">▶</span>`;
+
+                html += `
+                <div class="cat-folder open">
+                    <div class="cat-folder-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${groupName} ${!isCategoryEditMode ? `<span style="font-weight:normal;color:#9ca3af;font-size:12px;">(${groupCount})</span>` : ''}</span>
+                        ${folderActions}
+                    </div>
+                    <div class="cat-folder-items">
+                        ${existingGroupCats.map(cat => {
+                            processedCats.add(cat);
+                            return renderCategoryItem(cat);
+                        }).join('')}
+                    </div>
+                </div>`;
+            }
+        }
+
+        // 2. 渲染未分組
+        categories.forEach(cat => {
+            if (!processedCats.has(cat)) {
+                html += renderCategoryItem(cat);
+            }
+        });
+
+        container.innerHTML = html;
+        document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderCategoryItem(cat) {
+        // 管理模式顯示按鈕，否則顯示 Badge
+        const badgeOrActions = isCategoryEditMode 
+            ? `<div class="manage-actions">
+                 <button class="btn-mini" onclick="window.openCatEditModal(false, '${cat}')">✏️</button>
+                 <button class="btn-mini" style="color:red;" onclick="window.deleteCategory('${cat}', event)">🗑️</button>
+               </div>`
+            : `<span class="cat-badge">${catCounts[cat]||0}</span>`;
+
+        return `
+        <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}', event)">
+            <span>${cat}</span>
+            <div style="display:flex; align-items:center;">
+                ${badgeOrActions}
+            </div>
+        </div>`;
+    }
+
+    window.filterCat = (cat, event) => { 
+        if(isCategoryEditMode) return; 
+        if(event) event.stopPropagation();
+        currentCat = cat; renderCategories(); renderContent(); 
+        if(window.innerWidth <= 768) {
+            document.querySelector('.sidebar-overlay').classList.remove('open'); 
+            document.getElementById('sidebar').classList.remove('open');
         }
     };
 
@@ -527,103 +771,6 @@
         document.getElementById('current-image-container').style.display = 'none';
         document.getElementById('image-base64').value = ''; 
         isImageDeleted = true; 
-    };
-
-    function startDataListener() {
-        const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-            document.getElementById('connection-status').innerText = '🟢 已連線';
-            const tempItems = [];
-            catCounts = { 'All': 0 };
-            categories.forEach(c => catCounts[c] = 0);
-
-            snapshot.forEach((doc) => {
-                if(doc.id === categoryDocId) {
-                    categories = doc.data().list || categories;
-                    categories.forEach(c => { if(catCounts[c] === undefined) catCounts[c] = 0; });
-                } else {
-                    const data = doc.data();
-                    tempItems.push({ id: doc.id, ...data });
-                    catCounts['All']++;
-                    if(data.category) catCounts[data.category] = (catCounts[data.category] || 0) + 1;
-                }
-            });
-            tempItems.sort((a, b) => {
-                if (a.isPinned && !b.isPinned) return -1;
-                if (!a.isPinned && b.isPinned) return 1;
-                return 0; 
-            });
-            items = tempItems;
-            renderCategories();
-            renderContent();
-            if(!snapshot.size && !categories.length && isAdmin) confirmSetCategory(categories);
-        }, (error) => { console.log("Listen failed: ", error); });
-    }
-
-    function renderCategories() {
-        const container = document.getElementById('category-container');
-        let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')"><span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span></div>`;
-        
-        let processedCats = new Set();
-
-        for (const [groupName, groupCats] of Object.entries(CATEGORY_GROUPS)) {
-            const existingGroupCats = groupCats.filter(c => categories.includes(c));
-            if (existingGroupCats.length > 0) {
-                let groupCount = existingGroupCats.reduce((acc, c) => acc + (catCounts[c]||0), 0);
-                
-                html += `
-                <div class="cat-folder" onclick="this.classList.toggle('open')">
-                    <div class="cat-folder-header">
-                        <span>${groupName} <span style="font-weight:normal;color:#9ca3af;font-size:12px;">(${groupCount})</span></span>
-                        <span class="folder-icon">▶</span>
-                    </div>
-                    <div class="cat-folder-items">
-                        ${existingGroupCats.map(cat => {
-                            processedCats.add(cat);
-                            return renderCategoryItem(cat);
-                        }).join('')}
-                    </div>
-                </div>`;
-            }
-        }
-
-        categories.forEach(cat => {
-            if (!processedCats.has(cat)) {
-                html += renderCategoryItem(cat);
-            }
-        });
-
-        container.innerHTML = html;
-        document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
-
-    // 抽出單個分類的渲染邏輯 (為了支援管理模式)
-    function renderCategoryItem(cat) {
-        // 管理模式下顯示按鈕，普通模式顯示 Badge
-        const badgeOrActions = isCategoryEditMode 
-            ? `<div class="cat-actions">
-                 <button class="cat-btn-edit" onclick="window.renameCategory('${cat}', event)">✏️</button>
-                 <button class="cat-btn-del" onclick="window.deleteCategory('${cat}', event)">🗑️</button>
-               </div>`
-            : `<span class="cat-badge">${catCounts[cat]||0}</span>`;
-
-        return `
-        <div class="cat-item ${currentCat === cat ? 'active' : ''}" onclick="window.filterCat('${cat}', event)">
-            <span>${cat}</span>
-            <div style="display:flex; align-items:center;">
-                ${badgeOrActions}
-            </div>
-        </div>`;
-    }
-
-    window.filterCat = (cat, event) => { 
-        if(isCategoryEditMode) return; // 編輯模式下禁止點擊篩選
-        if(event) event.stopPropagation();
-        currentCat = cat; renderCategories(); renderContent(); 
-        if(window.innerWidth <= 768) {
-            document.querySelector('.sidebar-overlay').classList.remove('open'); 
-            document.getElementById('sidebar').classList.remove('open');
-        }
     };
 
     function renderContent() {
@@ -696,8 +843,6 @@
         }).join('');
     }
 
-    window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderContent(); };
-    window.clearSearch = () => { document.getElementById('search-input').value = ''; renderContent(); };
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('open'); };
     window.togglePin = async (id, currentStatus) => { try { await updateDoc(doc(db, collectionName, id), { isPinned: !currentStatus }); } catch(e) { alert('權限不足或錯誤'); } };
 
@@ -708,13 +853,9 @@
         const oldImage = items.find(i => i.id === id)?.image || ''; 
 
         let finalImage = '';
-        if (newImageBase64) {
-            finalImage = newImageBase64; 
-        } else if (isImageDeleted) {
-            finalImage = ''; 
-        } else {
-            finalImage = oldImage; 
-        }
+        if (newImageBase64) { finalImage = newImageBase64; } 
+        else if (isImageDeleted) { finalImage = ''; } 
+        else { finalImage = oldImage; }
 
         const data = {
             category: document.getElementById('input-category').value,
@@ -758,18 +899,10 @@
         } else {
             document.getElementById('current-image-container').style.display = 'none';
         }
-
         document.getElementById('modal').classList.add('open');
     };
     
-    window.addNewCategory = async () => {
-        if(!isAdmin) return;
-        const name = prompt("新分類名稱：");
-        if(name && !categories.includes(name)) await confirmSetCategory([...categories, name]);
-    };
-    async function confirmSetCategory(list) {
-        await setDoc(doc(db, collectionName, categoryDocId), { list, createdAt: serverTimestamp() }, { merge: true });
-    }
+    window.addNewCategory = async () => { window.openCatEditModal(true); };
 
     window.openModal = () => {
         document.getElementById('edit-id').value = '';
