@@ -8,7 +8,7 @@
     <title>STARS 素材庫 (Team)</title>
     <style>
         /* =========================================
-           🎨 美化版 CSS (v8.0 - Dashboard Added)
+           🎨 美化版 CSS (v6.0 - Manager Mode)
            ========================================= */
         :root {
             --primary: #4f46e5;
@@ -69,14 +69,17 @@
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
         .sidebar-overlay.open { display: block; opacity: 1; }
 
-        /* 側邊欄與分類 */
+        /* 側邊欄與分類 (Folder System) */
         aside { width: var(--sidebar-width); background-color: var(--bg-sidebar); box-shadow: 1px 0 0 var(--border-color); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; z-index: 100; transition: background-color 0.3s ease; }
+        
+        /* 🔴 管理模式樣式 */
         aside.edit-mode { background-color: var(--danger-bg); border-right: 2px solid var(--danger-border); }
         aside.edit-mode .brand { color: var(--danger-text); }
         
         .brand { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .cat-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
         
+        /* 母分類 (Folder) */
         .cat-folder { margin-top: 5px; }
         .cat-folder-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; transition: 0.2s; background: #f9fafb; }
         .cat-folder-header:hover { background: #f3f4f6; }
@@ -86,16 +89,19 @@
         .cat-folder.open .cat-folder-items { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 子分類 (Item) */
         .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text-secondary); font-weight: 500; font-size: 14px; transition: 0.2s; }
         .cat-item:hover { background-color: #f3f4f6; color: var(--primary); }
         .cat-item.active { background-color: #eef2ff; color: var(--primary); font-weight: 700; }
         .cat-badge { font-size: 11px; background: #e5e7eb; color: var(--text-secondary); padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center; }
         .cat-item.active .cat-badge { background: #c7d2fe; color: var(--primary); }
         
+        /* 管理模式按鈕 */
         .manage-actions { display: none; gap: 4px; }
         .btn-mini { font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: white; cursor: pointer; opacity: 0.8; }
         .btn-mini:hover { opacity: 1; transform: scale(1.05); }
         
+        /* 管理模式下的覆蓋樣式 */
         .edit-mode .cat-badge { display: none; }
         .edit-mode .manage-actions { display: flex; }
         .edit-mode .cat-item:hover { background: rgba(255,255,255,0.5); cursor: default; }
@@ -104,11 +110,8 @@
         .btn-add-cat { margin-top: 10px; width: 100%; padding: 12px; border: 2px dashed #e5e7eb; background: transparent; color: var(--text-secondary); border-radius: 12px; cursor: pointer; font-weight: 600; }
         .btn-add-cat:hover { border-color: var(--primary); color: var(--primary); background: #f9fafb; }
         
-        .data-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-data-action { flex: 1; padding: 10px; border: 1px solid #e5e7eb; background: white; color: var(--text-secondary); border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
-        .btn-data-action:hover { background: #f3f4f6; color: var(--text-main); border-color: #d1d5db; }
-
-        .btn-manage-toggle { margin-top: 10px; width: 100%; padding: 10px; border: none; background: transparent; color: #9ca3af; border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        /* 管理切換按鈕 */
+        .btn-manage-toggle { margin-top: 5px; width: 100%; padding: 10px; border: none; background: transparent; color: #9ca3af; border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-manage-toggle:hover { color: var(--text-main); background: #f3f4f6; }
         .btn-manage-toggle.active { background: var(--danger-text); color: white; font-weight: bold; }
 
@@ -125,21 +128,6 @@
         header { padding: 20px 40px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; z-index: 10; }
         .header-top { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
         .header-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-
-        /* 系統總覽頁面樣式 (New) */
-        #dashboard-container { padding: 10px 0; }
-        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 60px; }
-        .dash-card { background: white; border-radius: 16px; padding: 30px; box-shadow: var(--shadow-sm); border: 1px solid #e5e7eb; transition: 0.2s; display: flex; flex-direction: column; }
-        .dash-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
-        .dash-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f3f4f6; }
-        .dash-icon { font-size: 24px; color: var(--primary); }
-        .dash-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .dash-list { list-style: none; padding: 0; margin: 0; flex: 1; }
-        .dash-list li { margin-bottom: 12px; position: relative; padding-left: 15px; color: #4b5563; font-size: 15px; }
-        .dash-list li::before { content: "•"; color: var(--accent); font-weight: bold; position: absolute; left: 0; top: 0; }
-        .dash-footer { margin-top: 20px; text-align: right; }
-        .dash-link { color: var(--primary); font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; }
-        .dash-link:hover { text-decoration: underline; }
 
         .search-wrapper { position: relative; flex: 1; max-width: 500px; }
         .search-wrapper input { width: 100%; padding: 12px 45px; border: 1px solid transparent; background: white; border-radius: 99px; outline: none; transition: 0.3s; box-shadow: var(--shadow-sm); font-size: 15px; }
@@ -158,11 +146,12 @@
         .grid-view-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; padding-bottom: 80px; }
         .list-view-container { display: flex; flex-direction: column; gap: 12px; padding-bottom: 80px; }
 
+        /* 卡片設計 */
         .card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
         .card.pinned { border: 2px solid var(--accent); background: #fff7ed; }
         .card.pinned .pin-btn { color: var(--accent); opacity: 1; }
-        .card-img { width: 100%; height: 110px; background-color: #e5e7eb; object-fit: cover; border-bottom: 1px solid #f3f4f6; display: none; cursor: zoom-in; }
+        .card-img { width: 100%; height: 80px; background-color: #e5e7eb; object-fit: cover; border-bottom: 1px solid #f3f4f6; display: none; cursor: zoom-in; }
         .card-img.show { display: block; }
         .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
@@ -172,11 +161,11 @@
         .tag:hover { background-color: #e2e8f0; color: #1e293b; }
         .card-question { background-color: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #94a3b8; }
         .question-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px; display: flex; justify-content: space-between; letter-spacing: 0.5px; text-transform: uppercase; }
-        .question-text { font-size: 14px; color: #334155; line-height: 1.6; white-space: pre-wrap; max-height: 80px; overflow-y: auto; }
+        .question-text { font-size: 14px; color: #334155; line-height: 1.6; white-space: pre-wrap; }
         .question-copy-btn { font-size: 11px; color: var(--primary); font-weight: 600; cursor: pointer; background: none; border: none; padding: 0; }
         .question-copy-btn:hover { text-decoration: underline; }
         .card-note { font-size: 12px; color: #b45309; background: #fef3c7; padding: 8px 12px; border-radius: 8px; margin-bottom: 16px; display: flex; gap: 8px; align-items: center; font-weight: 500; }
-        .card-text { background: #ffffff; padding: 16px; border-radius: 12px; font-size: 15px; line-height: 1.7; color: var(--text-main); white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #e5e7eb; max-height: 120px; overflow-y: auto; }
+        .card-text { background: #ffffff; padding: 16px; border-radius: 12px; font-size: 15px; line-height: 1.7; color: var(--text-main); white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #e5e7eb; max-height: 100px; overflow-y: auto; }
         .card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
         .card-time { font-size: 12px; color: #9ca3af; text-align: right; }
         .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
@@ -204,6 +193,7 @@
         .is-admin .admin-only { display: flex !important; }
         .is-admin span.admin-only { display: inline-block !important; }
 
+        /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal { background: white; width: 550px; max-width: 90%; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
@@ -211,6 +201,7 @@
         .form-control:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
         .modal-label { font-size: 14px; font-weight: 700; color: #374151; margin-bottom: -8px; margin-top: 8px; }
+        
         textarea#input-question { height: 160px !important; min-height: 160px !important; background: #f1f5f9; resize: vertical; border-left: 4px solid #cbd5e1; }
         textarea#input-content { height: 350px !important; min-height: 350px !important; resize: vertical; }
 
@@ -274,22 +265,10 @@
 
     <aside id="sidebar">
         <div class="brand">✨ STARS 素材庫</div>
-        
-        <div class="cat-list" id="category-container">
-            <div class="cat-item" onclick="showDashboard()">
-                <span>🏠 系統總覽</span>
-            </div>
-            </div>
+        <div class="cat-list" id="category-container"></div>
         
         <button class="btn-add-cat admin-only" onclick="openCatEditModal(true)">+ 新增分類</button>
         <button class="btn-add-cat admin-only" onclick="window.addFolder()" style="margin-top:5px; border-style:solid;">+ 新增資料夾</button>
-        
-        <div class="data-actions admin-only">
-            <button class="btn-data-action" onclick="exportData()">📤 匯出</button>
-            <button class="btn-data-action" onclick="document.getElementById('import-file').click()">📥 匯入</button>
-            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
-        </div>
-
         <button class="btn-manage-toggle admin-only" id="btn-manage-cat" onclick="toggleCategoryEditMode()">⚙️ 管理分類</button>
         
         <div class="user-panel">
@@ -308,17 +287,17 @@
     <main>
         <header>
             <div class="header-top">
-                <div class="search-wrapper control-group">
+                <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
                     <input type="text" id="search-input" placeholder="搜尋標題、#標籤 或內容...">
                     <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
                 </div>
-                <button class="btn-primary admin-only control-group" onclick="openModal()">
+                <button class="btn-primary admin-only" onclick="openModal()">
                     <span>＋</span> 新增素材
                 </button>
             </div>
             
-            <div class="header-bottom control-group">
+            <div class="header-bottom">
                 <div id="header-status" style="font-size:13px; color:#6b7280; font-weight:500;"></div>
                 <div class="view-controls">
                     <span>呈現：</span>
@@ -329,63 +308,6 @@
         </header>
 
         <div class="content-area">
-            <div id="dashboard-view" style="display:none;">
-                <h2 style="font-size:24px; color:var(--text-main); margin-bottom:25px;">常見問題 / 新手指南</h2>
-                <div class="dash-grid">
-                    <div class="dash-card">
-                        <div class="dash-header">
-                            <span class="dash-icon">❓</span>
-                            <div class="dash-title">訂貨辦法</div>
-                        </div>
-                        <ul class="dash-list">
-                            <li>如何訂貨</li>
-                            <li>取貨管道及辦法</li>
-                            <li>付款方式</li>
-                            <li>訂單查詢及異動</li>
-                            <li>新人優惠</li>
-                        </ul>
-                    </div>
-                    <div class="dash-card">
-                        <div class="dash-header">
-                            <span class="dash-icon">🚚</span>
-                            <div class="dash-title">配送服務</div>
-                        </div>
-                        <ul class="dash-list">
-                            <li>宅配到府</li>
-                            <li>超商取貨</li>
-                            <li>購物須知</li>
-                        </ul>
-                    </div>
-                    <div class="dash-card">
-                        <div class="dash-header">
-                            <span class="dash-icon">🔧</span>
-                            <div class="dash-title">維修服務</div>
-                        </div>
-                        <ul class="dash-list">
-                            <li>維修品項</li>
-                            <li>維修管道</li>
-                            <li>收費標準</li>
-                            <li>到府服務</li>
-                            <li>維修據點</li>
-                        </ul>
-                        <div class="dash-footer">
-                            <span class="dash-link">查看更多 →</span>
-                        </div>
-                    </div>
-                    <div class="dash-card">
-                        <div class="dash-header">
-                            <span class="dash-icon">💳</span>
-                            <div class="dash-title">長客計畫</div>
-                        </div>
-                        <ul class="dash-list">
-                            <li>物流配送與取貨</li>
-                            <li>優惠與產品</li>
-                            <li>結帳與付款</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
             <div id="content-container" class="grid-view-container"></div>
         </div>
     </main>
@@ -432,13 +354,17 @@
     <div class="modal">
         <h2 style="margin:0; font-size:20px; color:var(--text-main);">編輯分類</h2>
         <input type="hidden" id="cat-edit-old-name">
+        
         <div class="modal-label">分類名稱</div>
         <input type="text" id="cat-edit-name" class="form-control">
+        
         <div class="modal-label">所屬資料夾</div>
         <select id="cat-edit-group" class="form-control">
             <option value="">(無資料夾 - 顯示在最外層)</option>
         </select>
+        
         <div style="font-size:12px; color:#ef4444; margin-top:10px;">⚠️ 修改名稱後，系統將自動更新所有關聯的卡片。</div>
+        
         <div class="modal-footer">
             <button onclick="document.getElementById('cat-edit-modal').classList.remove('open')" style="padding:8px 20px; border:1px solid #ddd; background:white; border-radius:8px; cursor:pointer;">取消</button>
             <button class="btn-primary" onclick="confirmCategoryEdit()">確認修改</button>
@@ -452,13 +378,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-    // --- 0. 分類群組設定 ---
-    const CATEGORY_GROUPS = {
-        "📦 產品系列": ["營養食品", "美容保養", "家居科技", "產品介紹"],
-        "🛡️ 異議處理": ["價格問題", "直銷觀念", "異議處理"],
-        "📖 團隊資料": ["琴姊專區", "團隊公告", "行政流程"]
-    };
 
     // 1. Config
     const firebaseConfig = {
@@ -481,8 +400,11 @@
     const collectionName = "replies";
     const categoryDocId = "settings_categories";
 
-    let items = [];
+    // 預設資料結構 (若 DB 為空時使用)
     let categories = ['常用問候', '產品介紹', '異議處理'];
+    let categoryGroups = {}; // 格式: { "產品系列": ["產品介紹"], "異議": ["異議處理"] }
+    
+    let items = [];
     let currentCat = 'All';
     let catCounts = {};
     let currentUser = null;
@@ -539,60 +461,7 @@
         }
     }
 
-    // --- 匯出功能 ---
-    window.exportData = () => {
-        if(!items || items.length === 0) return alert("目前沒有資料可匯出");
-        const dataStr = JSON.stringify(items, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const date = new Date().toISOString().slice(0,10).replace(/-/g, "");
-        a.href = url;
-        a.download = `stars_backup_${date}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    // --- 匯入功能 ---
-    window.importData = async (input) => {
-        const file = input.files[0];
-        if (!file) return;
-        
-        if (!confirm("⚠️ 警告：匯入將會把備份檔案中的資料寫入資料庫。\n這可能需要一點時間，確定要繼續嗎？")) {
-            input.value = "";
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const importedItems = JSON.parse(e.target.result);
-                if (!Array.isArray(importedItems)) throw new Error("檔案格式錯誤");
-
-                let count = 0;
-                const batchSize = 500;
-                let batch = writeBatch(db);
-
-                for (const item of importedItems) {
-                    const docRef = doc(collection(db, collectionName));
-                    const { id, ...data } = item;
-                    data.createdAt = serverTimestamp(); 
-                    batch.set(docRef, data);
-                    count++;
-                    if (count % batchSize === 0) { await batch.commit(); batch = writeBatch(db); }
-                }
-                
-                if (count % batchSize !== 0) await batch.commit();
-                
-                alert(`成功匯入 ${count} 筆資料！`);
-                input.value = "";
-            } catch (err) {
-                alert("匯入失敗：" + err.message);
-            }
-        };
-        reader.readAsText(file);
-    };
-
+    // --- 管理模式開關 ---
     window.toggleCategoryEditMode = () => {
         isCategoryEditMode = !isCategoryEditMode;
         const sidebar = document.getElementById('sidebar');
@@ -610,6 +479,9 @@
         renderCategories(); 
     };
 
+    // --- 分類操作：新增/編輯/刪除 ---
+    
+    // 1. 開啟編輯 Modal
     window.openCatEditModal = (isNew, catName = "") => {
         if(!isAdmin) return;
         
@@ -618,6 +490,7 @@
         const inputOldName = document.getElementById('cat-edit-old-name');
         const selectGroup = document.getElementById('cat-edit-group');
         
+        // 填入資料夾選項
         selectGroup.innerHTML = '<option value="">(無資料夾 - 顯示在最外層)</option>';
         Object.keys(categoryGroups).forEach(group => {
             selectGroup.innerHTML += `<option value="${group}">${group}</option>`;
@@ -630,15 +503,18 @@
         } else {
             inputName.value = catName;
             inputOldName.value = catName;
+            // 找出目前所屬群組
             let currentGroup = "";
             for(const [gName, list] of Object.entries(categoryGroups)) {
                 if(list.includes(catName)) currentGroup = gName;
             }
             selectGroup.value = currentGroup;
         }
+        
         modal.classList.add('open');
     };
 
+    // 2. 確認儲存分類 (含 Batch Update)
     window.confirmCategoryEdit = async () => {
         const oldName = document.getElementById('cat-edit-old-name').value;
         const newName = document.getElementById('cat-edit-name').value.trim();
@@ -647,23 +523,31 @@
         if(!newName) return alert("分類名稱不能為空");
         if(oldName && newName !== oldName && categories.includes(newName)) return alert("該分類名稱已存在");
 
+        // 更新資料結構
         let newCategories = [...categories];
-        let newGroups = JSON.parse(JSON.stringify(categoryGroups)); 
+        let newGroups = JSON.parse(JSON.stringify(categoryGroups)); // Deep copy
 
+        // 如果是改名
         if(oldName && oldName !== newName) {
             const idx = newCategories.indexOf(oldName);
             if(idx > -1) newCategories[idx] = newName;
+            
+            // 更新 Group 內的名稱
             for(const g in newGroups) {
                 const gIdx = newGroups[g].indexOf(oldName);
                 if(gIdx > -1) newGroups[g][gIdx] = newName;
             }
         } else if(!oldName && !categories.includes(newName)) {
+            // 新增
             newCategories.push(newName);
         }
 
+        // 處理群組移動
+        // 先從舊群組移除
         for(const g in newGroups) {
-            newGroups[g] = newGroups[g].filter(c => c !== (oldName || newName)); 
+            newGroups[g] = newGroups[g].filter(c => c !== (oldName || newName)); // 移除舊名或新名(防重複)
         }
+        // 加入新群組
         if(targetGroup) {
             if(!newGroups[targetGroup]) newGroups[targetGroup] = [];
             newGroups[targetGroup].push(newName);
@@ -672,8 +556,11 @@
         try {
             const batch = writeBatch(db);
             const catRef = doc(db, collectionName, categoryDocId);
+            
+            // 1. 寫入設定檔
             batch.set(catRef, { list: newCategories, structure: newGroups, createdAt: serverTimestamp() }, { merge: true });
 
+            // 2. 如果是改名，批次更新所有卡片
             if(oldName && oldName !== newName) {
                 const q = query(collection(db, collectionName), where("category", "==", oldName));
                 const querySnapshot = await getDocs(q);
@@ -684,15 +571,19 @@
 
             await batch.commit();
             document.getElementById('cat-edit-modal').classList.remove('open');
+            // alert(oldName ? "修改成功" : "新增成功");
         } catch (e) {
             alert("儲存失敗：" + e.message);
         }
     };
 
+    // 3. 刪除分類
     window.deleteCategory = async (cat, event) => {
         if(event) event.stopPropagation();
         if(confirm(`確定刪除分類「${cat}」嗎？\n(注意：屬於此分類的卡片不會被刪除，但會暫時找不到分類)`)) {
+            // 從 list 移除
             const newCategories = categories.filter(c => c !== cat);
+            // 從 groups 移除
             const newGroups = JSON.parse(JSON.stringify(categoryGroups));
             for(const g in newGroups) {
                 newGroups[g] = newGroups[g].filter(c => c !== cat);
@@ -702,6 +593,7 @@
         }
     };
 
+    // --- 資料夾操作 ---
     window.addFolder = async () => {
         const name = prompt("請輸入新資料夾名稱：");
         if(name) {
@@ -731,6 +623,7 @@
         }
     };
 
+    // 通用儲存設定函式
     async function saveSettings(newList, newGroups) {
         await setDoc(doc(db, collectionName, categoryDocId), { 
             list: newList, 
@@ -739,25 +632,7 @@
         }, { merge: true });
     }
 
-    // --- 顯示/隱藏系統總覽 ---
-    window.showDashboard = () => {
-        // 隱藏一般內容，顯示 Dashboard
-        document.getElementById('content-container').style.display = 'none';
-        document.getElementById('dashboard-view').style.display = 'block';
-        
-        // 隱藏 Header 控制項 (搜尋框、新增按鈕、切換器)
-        document.querySelectorAll('.control-group').forEach(el => el.style.display = 'none');
-        
-        // 側邊欄樣式更新 (移除其他 Active)
-        document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
-        
-        // 手機版自動收合側邊欄
-        if(window.innerWidth <= 768) {
-            document.querySelector('.sidebar-overlay').classList.remove('open'); 
-            document.getElementById('sidebar').classList.remove('open');
-        }
-    };
-
+    // --- 資料監聽 ---
     function startDataListener() {
         const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
@@ -770,7 +645,7 @@
                 if(doc.id === categoryDocId) {
                     const data = doc.data();
                     categories = data.list || categories;
-                    categoryGroups = data.structure || {}; 
+                    categoryGroups = data.structure || {}; // 讀取資料夾結構
                     categories.forEach(c => { if(catCounts[c] === undefined) catCounts[c] = 0; });
                 } else {
                     const data = doc.data();
@@ -792,22 +667,18 @@
 
     function renderCategories() {
         const container = document.getElementById('category-container');
-        // 加入系統總覽按鈕
-        let html = `
-            <div class="cat-item" onclick="window.showDashboard()">
-                <span>🏠 系統總覽</span>
-            </div>
-            <div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')">
-                <span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span>
-            </div>`;
+        let html = `<div class="cat-item ${currentCat === 'All' ? 'active' : ''}" onclick="window.filterCat('All')"><span>📂 全部</span><span class="cat-badge">${catCounts['All']||0}</span></div>`;
         
         let processedCats = new Set();
 
+        // 1. 渲染資料夾
         for (const [groupName, groupCats] of Object.entries(categoryGroups)) {
+            // 管理模式下，即使資料夾是空的也顯示
             const existingGroupCats = groupCats.filter(c => categories.includes(c));
             if (existingGroupCats.length > 0 || isCategoryEditMode) {
                 let groupCount = existingGroupCats.reduce((acc, c) => acc + (catCounts[c]||0), 0);
                 
+                // 管理按鈕 (資料夾)
                 const folderActions = isCategoryEditMode 
                     ? `<div class="manage-actions" onclick="event.stopPropagation()">
                          <button class="btn-mini" onclick="window.renameFolder('${groupName}', event)">✏️</button>
@@ -831,6 +702,7 @@
             }
         }
 
+        // 2. 渲染未分組
         categories.forEach(cat => {
             if (!processedCats.has(cat)) {
                 html += renderCategoryItem(cat);
@@ -842,6 +714,7 @@
     }
 
     function renderCategoryItem(cat) {
+        // 管理模式顯示按鈕，否則顯示 Badge
         const badgeOrActions = isCategoryEditMode 
             ? `<div class="manage-actions">
                  <button class="btn-mini" onclick="window.openCatEditModal(false, '${cat}')">✏️</button>
@@ -861,18 +734,7 @@
     window.filterCat = (cat, event) => { 
         if(isCategoryEditMode) return; 
         if(event) event.stopPropagation();
-        
-        // 顯示內容區，隱藏 Dashboard
-        document.getElementById('content-container').style.display = (currentView === 'grid') ? 'grid' : 'flex';
-        document.getElementById('dashboard-view').style.display = 'none';
-        
-        // 顯示 Header 控制項
-        document.querySelectorAll('.control-group').forEach(el => el.style.display = 'flex');
-
-        currentCat = cat; 
-        renderCategories(); 
-        renderContent(); 
-        
+        currentCat = cat; renderCategories(); renderContent(); 
         if(window.innerWidth <= 768) {
             document.querySelector('.sidebar-overlay').classList.remove('open'); 
             document.getElementById('sidebar').classList.remove('open');
@@ -981,8 +843,6 @@
         }).join('');
     }
 
-    window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderContent(); };
-    window.clearSearch = () => { document.getElementById('search-input').value = ''; renderContent(); };
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('open'); };
     window.togglePin = async (id, currentStatus) => { try { await updateDoc(doc(db, collectionName, id), { isPinned: !currentStatus }); } catch(e) { alert('權限不足或錯誤'); } };
 
@@ -1109,3 +969,4 @@
 </script>
 </body>
 </html>
+
