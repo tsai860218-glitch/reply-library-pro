@@ -8,7 +8,7 @@
     <title>STARS 素材庫 (Team)</title>
     <style>
         /* =========================================
-           🎨 美化版 CSS (v6.0 - Manager Mode)
+           🎨 美化版 CSS (v6.2 - Compact Text)
            ========================================= */
         :root {
             --primary: #4f46e5;
@@ -72,7 +72,6 @@
         /* 側邊欄與分類 (Folder System) */
         aside { width: var(--sidebar-width); background-color: var(--bg-sidebar); box-shadow: 1px 0 0 var(--border-color); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; z-index: 100; transition: background-color 0.3s ease; }
         
-        /* 🔴 管理模式樣式 */
         aside.edit-mode { background-color: var(--danger-bg); border-right: 2px solid var(--danger-border); }
         aside.edit-mode .brand { color: var(--danger-text); }
         
@@ -101,7 +100,6 @@
         .btn-mini { font-size: 12px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); background: white; cursor: pointer; opacity: 0.8; }
         .btn-mini:hover { opacity: 1; transform: scale(1.05); }
         
-        /* 管理模式下的覆蓋樣式 */
         .edit-mode .cat-badge { display: none; }
         .edit-mode .manage-actions { display: flex; }
         .edit-mode .cat-item:hover { background: rgba(255,255,255,0.5); cursor: default; }
@@ -110,7 +108,6 @@
         .btn-add-cat { margin-top: 10px; width: 100%; padding: 12px; border: 2px dashed #e5e7eb; background: transparent; color: var(--text-secondary); border-radius: 12px; cursor: pointer; font-weight: 600; }
         .btn-add-cat:hover { border-color: var(--primary); color: var(--primary); background: #f9fafb; }
         
-        /* 管理切換按鈕 */
         .btn-manage-toggle { margin-top: 5px; width: 100%; padding: 10px; border: none; background: transparent; color: #9ca3af; border-radius: 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-manage-toggle:hover { color: var(--text-main); background: #f3f4f6; }
         .btn-manage-toggle.active { background: var(--danger-text); color: white; font-weight: bold; }
@@ -151,21 +148,29 @@
         .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
         .card.pinned { border: 2px solid var(--accent); background: #fff7ed; }
         .card.pinned .pin-btn { color: var(--accent); opacity: 1; }
-        .card-img { width: 100%; height: 80px; background-color: #e5e7eb; object-fit: cover; border-bottom: 1px solid #f3f4f6; display: none; cursor: zoom-in; }
+        /* 縮圖高度調整為 110px */
+        .card-img { width: 100%; height: 110px; background-color: #e5e7eb; object-fit: cover; border-bottom: 1px solid #f3f4f6; display: none; cursor: zoom-in; }
         .card-img.show { display: block; }
+        
         .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
         .card-title { font-weight: 700; font-size: 17px; color: var(--text-main); line-height: 1.4; flex: 1; }
         .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
         .tag { font-size: 11px; background-color: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .tag:hover { background-color: #e2e8f0; color: #1e293b; }
+        
         .card-question { background-color: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #94a3b8; }
         .question-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px; display: flex; justify-content: space-between; letter-spacing: 0.5px; text-transform: uppercase; }
-        .question-text { font-size: 14px; color: #334155; line-height: 1.6; white-space: pre-wrap; }
+        /* 對方情境文字高度限制 */
+        .question-text { font-size: 14px; color: #334155; line-height: 1.6; white-space: pre-wrap; max-height: 80px; overflow-y: auto; }
         .question-copy-btn { font-size: 11px; color: var(--primary); font-weight: 600; cursor: pointer; background: none; border: none; padding: 0; }
         .question-copy-btn:hover { text-decoration: underline; }
+        
         .card-note { font-size: 12px; color: #b45309; background: #fef3c7; padding: 8px 12px; border-radius: 8px; margin-bottom: 16px; display: flex; gap: 8px; align-items: center; font-weight: 500; }
-        .card-text { background: #ffffff; padding: 16px; border-radius: 12px; font-size: 15px; line-height: 1.7; color: var(--text-main); white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #e5e7eb; max-height: 250px; overflow-y: auto; }
+        
+        /* 回覆內容高度限制 120px */
+        .card-text { background: #ffffff; padding: 16px; border-radius: 12px; font-size: 15px; line-height: 1.7; color: var(--text-main); white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #e5e7eb; max-height: 120px; overflow-y: auto; }
+        
         .card-footer { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
         .card-time { font-size: 12px; color: #9ca3af; text-align: right; }
         .btn-copy { width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
@@ -193,7 +198,6 @@
         .is-admin .admin-only { display: flex !important; }
         .is-admin span.admin-only { display: inline-block !important; }
 
-        /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal { background: white; width: 550px; max-width: 90%; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
@@ -201,7 +205,6 @@
         .form-control:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); outline: none; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
         .modal-label { font-size: 14px; font-weight: 700; color: #374151; margin-bottom: -8px; margin-top: 8px; }
-        
         textarea#input-question { height: 160px !important; min-height: 160px !important; background: #f1f5f9; resize: vertical; border-left: 4px solid #cbd5e1; }
         textarea#input-content { height: 350px !important; min-height: 350px !important; resize: vertical; }
 
@@ -379,6 +382,13 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+    // --- 0. 分類群組設定 ---
+    const CATEGORY_GROUPS = {
+        "📦 產品系列": ["營養食品", "美容保養", "家居科技", "產品介紹"],
+        "🛡️ 異議處理": ["價格問題", "直銷觀念", "異議處理"],
+        "📖 團隊資料": ["琴姊專區", "團隊公告", "行政流程"]
+    };
+
     // 1. Config
     const firebaseConfig = {
         apiKey: "AIzaSyAC3RZI-wf8y64q-Dxoec3MbMVOFXpdAUg",
@@ -400,18 +410,15 @@
     const collectionName = "replies";
     const categoryDocId = "settings_categories";
 
-    // 預設資料結構 (若 DB 為空時使用)
-    let categories = ['常用問候', '產品介紹', '異議處理'];
-    let categoryGroups = {}; // 格式: { "產品系列": ["產品介紹"], "異議": ["異議處理"] }
-    
     let items = [];
+    let categories = ['常用問候', '產品介紹', '異議處理'];
     let currentCat = 'All';
     let catCounts = {};
     let currentUser = null;
     let isAdmin = false;
     let currentView = localStorage.getItem('stars_view_mode') || 'grid';
     let isImageDeleted = false;
-    let isCategoryEditMode = false;
+    let isCategoryEditMode = false; // 分類管理模式開關
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -713,6 +720,7 @@
         document.getElementById('input-category').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
+    // 抽出單個分類的渲染邏輯 (為了支援管理模式)
     function renderCategoryItem(cat) {
         // 管理模式顯示按鈕，否則顯示 Badge
         const badgeOrActions = isCategoryEditMode 
@@ -843,6 +851,8 @@
         }).join('');
     }
 
+    window.filterTag = (tag) => { document.getElementById('search-input').value = tag; renderContent(); };
+    window.clearSearch = () => { document.getElementById('search-input').value = ''; renderContent(); };
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('open'); };
     window.togglePin = async (id, currentStatus) => { try { await updateDoc(doc(db, collectionName, id), { isPinned: !currentStatus }); } catch(e) { alert('權限不足或錯誤'); } };
 
@@ -969,5 +979,3 @@
 </script>
 </body>
 </html>
-
-
